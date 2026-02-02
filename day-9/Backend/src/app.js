@@ -3,10 +3,11 @@
 
 const express = require("express");
 const noteModel = require("./models/note.model")
+const cors = require("cors")
 
 
 const app = express()
-
+app.use(cors()) ; //server starts accepting cross origin requests ..
 app.use(express.json()) // middleware
 
 
