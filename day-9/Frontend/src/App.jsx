@@ -7,7 +7,8 @@ function App() {
   const [notes, setNotes] = useState([]); //state variable
 
   function fetchNotes() {
-    axios.get('http://localhost:3000/api/notes')
+    // axios.get('http://localhost:3000/api/notes')
+    axios.get('https://backend-github-xr1x.onrender.com/api/notes')
       .then((res) => {
         // console.log(res.data.notes);
         setNotes(res.data.notes);
@@ -26,7 +27,8 @@ function App() {
 
     // console.log(title.value, description.value);
 
-    axios.post("http://localhost:3000/api/notes", {
+    // axios.post("http://localhost:3000/api/notes", {
+    axios.post("https://backend-github-xr1x.onrender.com/api/notes", {
       title: title.value,
       description: description.value
     })
@@ -38,7 +40,8 @@ function App() {
 
   function handleDeleteNote(noteId) {
     // console.log(noteId);
-    axios.delete(`http://localhost:3000/api/notes/${noteId}`)
+    // axios.delete(`http://localhost:3000/api/notes/${noteId}`)
+    axios.delete(`https://backend-github-xr1x.onrender.com/api/notes/${noteId}`)
       .then(res => {
         console.log(res.data);
         fetchNotes()
@@ -59,7 +62,8 @@ function App() {
   function handleUpdateDescription(noteId) {
     // console.log(noteId)
     const newDescription = prompt("Enter new description");
-    axios.patch(`http://localhost:3000/api/notes/${noteId}`, {
+    // axios.patch(`http://localhost:3000/api/notes/${noteId}`, {
+    axios.patch(`https://backend-github-xr1x.onrender.com/api/notes/${noteId}`, {
       description: newDescription
     })
       .then((res) => {
