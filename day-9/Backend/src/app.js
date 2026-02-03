@@ -4,11 +4,13 @@
 const express = require("express");
 const noteModel = require("./models/note.model")
 const cors = require("cors")
+const path = require("path")
 
 
 const app = express()
 app.use(cors()) ; //server starts accepting cross origin requests ..
 app.use(express.json()) // middleware
+app.use(express.static("./public")) //middleware
 
 
 // - POST /api/notes
@@ -63,6 +65,15 @@ app.patch("/api/notes/:id", async (req,res)=>{
     res.status(200).json({
         message: "Note updated successfully",
     })
+})
+
+
+app.use("*name", (req,res)=>{
+    // res.send("this is wild card");
+    // res.sendFile(`C:\Users\Abhinav Bisht\Desktop\COHORT 2.0\3.Back-End\Backend-Github\day-9\Backend\src\app.js`);
+    // res.sendFile(`C:/Users/Abhinav Bisht/Desktop/COHORT 2.0/3.Back-End/Backend-Github/day-9/Backend/src/app.js`);
+
+    res.sendFile(path.join(__dirname, "..", "/public/index.html"))
 })
 
 module.exports = app

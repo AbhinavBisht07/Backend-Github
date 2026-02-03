@@ -17,7 +17,7 @@ html{
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 1rem;
+  padding: 1rem 2rem;
 }
 .note{
   background-color: #5b5b5b;
@@ -25,4 +25,49 @@ html{
   border-radius: 0.7rem;
   max-width: 20rem;
   color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.note button{
+  width: fit-content;
+  font-size: 16px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s all cubic-bezier(0.19, 1, 0.22, 1);
+}
+.note button:active{
+  scale: 0.95;
+}
+
+
+.note-create-form{
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  gap: 1rem;
+  padding: 1rem 2rem;
+}
+.note-create-form input{
+  font-size: 20px;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+}
+.note-create-form button{
+  width: fit-content;
+  font-size: 20px;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s all cubic-bezier(0.19, 1, 0.22, 1);
+}
+.note-create-form button:active{
+  scale: 0.95;
 }
