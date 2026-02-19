@@ -4,10 +4,15 @@
 globalThis.File = require("node:buffer").File; //
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express(); //server created
 app.use(express.json()); //middleware used to read and parse JSON data(convert JSON data to javascript object)
 app.use(cookieParser()); //middleware
+app.use(cors({
+    credentials: true,
+    origin: "http://localhost:5173"
+})); // cors used as a middleware
 
 
 // Requiring routes :-
