@@ -187,9 +187,36 @@ async function likePostController(req,res){
 }
 
 
+async function getFeedController(req,res) {
+    const user = req.user
+
+    // const posts = await postModel.find().populate("user") 
+    const posts = await Promise.all(  (await postModel.find().populate("user").lean())
+    .map(async (post)=>{
+        const isLiked = await likeModel.findOne({
+            user: user.username,
+            post: post._id
+        })
+
+        //type of this post object, by default is MongooseObject .. so we cannot make changes inside it unless we use lean()
+        post.isLiked = !!isLiked;
+
+        return post
+        // return post.caption
+    })  )
+
+
+    res.status(200).json({
+        message: "Posts fetched successfully.",
+        posts
+    })
+}
+
+
 module.exports = {
     createPostController,
     getPostController,
     getPostDetailsController,
-    likePostController
+    likePostController,
+    getFeedController
 }

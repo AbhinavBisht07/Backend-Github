@@ -75,7 +75,7 @@ async function loginController(req,res){
                 email: email  // suppose test1@test.com or undefined
             }
         ]
-    })
+    }).select("+password")
 
     if(!user){
         return res.status(404).json({

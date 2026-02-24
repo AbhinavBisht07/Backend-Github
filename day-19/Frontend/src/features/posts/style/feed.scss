@@ -1,0 +1,84 @@
+.feed-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    .feed {
+        max-width: 300px;
+        width: 100%;
+
+        .posts {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            .post {
+                padding: 0.5rem 0.5rem;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                background-color: rgb(47, 47, 47);
+
+                .user {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+
+                    .img-wrapper {
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        border: 2px solid rgba(255, 0, 0, 0);
+                        // background: conic-gradient(#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5, #feda75) border-box;
+                        // background: conic-gradient(from 0deg, #f61d7e,#8134af,#515bd4,#f58529, #feda77, #dd2a7b, #dd2a7b) border-box;
+                        
+                        background: conic-gradient(from 45deg, 
+                        #D303C5 0% ,
+                        #FF3937 30% ,
+                        #FFC700 45% ,
+                        #D303C5 90% )border-box;
+
+                        img {
+                            width: 2rem;
+                            aspect-ratio: 1/1;
+                            object-fit: cover;
+                            border-radius: 50%;
+                        }
+                    }
+                }
+                
+                .icons{
+                    display: flex;
+                    justify-content: space-between;
+                    .left{
+                        display: flex;
+                        gap: 0.75rem;
+                    }
+
+                    .like{
+                        color: red;
+                    }
+                    
+                    svg{
+                        width: 1.5rem;
+                        aspect-ratio: 1/1;
+                        color: white;
+                    }
+                    button{
+                        background-color: transparent;
+                        border: none;
+                        outline: none;
+
+                    }
+                }
+
+                img {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
