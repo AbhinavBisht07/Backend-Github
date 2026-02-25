@@ -1,7 +1,9 @@
 .feed-page {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
+    gap: 1rem;
 
     .feed {
         max-width: 300px;
@@ -61,7 +63,7 @@
                     .like{
                         color: red;
                     }
-                    
+
                     svg{
                         width: 1.5rem;
                         aspect-ratio: 1/1;

@@ -40,6 +40,11 @@ postRouter.get("/details/:postId", identifyUser, postController.getPostDetailsCo
  * @description like a post with the provided postId in the request inside params (req.params.postid). 
  */
 postRouter.post("/like/:postId", identifyUser, postController.likePostController)
+/**
+ * @route DELETE /api/posts/unlike/:postid
+ * @description unlike a post with the provided postId in the request inside params (req.params.postid)... deletes the relationship document containing data of the provided posId with a user ... 
+ */
+postRouter.delete("/unlike/:postId", identifyUser, postController.unlikePostController)
 
 
 /**
