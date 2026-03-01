@@ -1,6 +1,8 @@
 const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const blacklistModel = require("../models/blacklist.model")
+const redis = require("../config/cache");
 
 
 async function registerUser(req,res){
@@ -52,7 +54,7 @@ async function loginUser(req,res){
             {email},
             {username}
         ]
-    })
+    }).select("+password");
 
     // task 2: why we are not giving message "404 user not found" in this scenaro :-
     if(!user){
@@ -86,7 +88,40 @@ async function loginUser(req,res){
 }
 
 
+async function getMe(req,res){
+    const user = await userModel.findById(req.user.id).select("-password")
+
+    res.status(200).json({
+        message: "User fetched successfully.",
+        user
+    })
+}
+
+
+async function logoutUser(req,res){
+    const token = req.cookies.token;
+
+    // Remove token from client side :-
+    res.clearCookie("token");
+
+    // blacklisting token(creating blacklist collection in mongoDB):-
+    // await blacklistModel.create({
+    //     token
+    // })
+
+    // blacklisting token(in Redis):-
+    await redis.set(token, Date.now().toString(), "EX", 60 * 60);
+
+
+    res.status(200).json({
+        message: "User logged out successfully."
+    })
+}
+
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    getMe,
+    logoutUser
 }
