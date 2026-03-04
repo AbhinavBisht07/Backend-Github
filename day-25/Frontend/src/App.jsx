@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import FaceExpression from './features/expression/components/FaceExpression'
+import { RouterProvider } from "react-router";
+import { router } from "./App.routes.jsx";
+import "./features/shared/styles/global.scss"
+import { AuthProvider } from "./features/auth/auth.context.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <FaceExpression></FaceExpression>
+    <AuthProvider>
+      <RouterProvider router={router}/>
+    </AuthProvider>
   )
 }
 
