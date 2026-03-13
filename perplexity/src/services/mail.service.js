@@ -1,4 +1,3 @@
-// import "dotenv/config";
 import nodemailer from "nodemailer";
 
 
@@ -19,7 +18,7 @@ transporter.verify()
 .catch((err)=>{ console.log("Email transporter verification failed:", err) })
 
 
-// Jo further communication hoga wo bhi humara transporter hanle karega kuch ese :-
+// Jo further communication hoga wo bhi humara transporter handle karega kuch ese :-
 // to -> kisko bhejna , subject -> subject kya hai email ka, html -> jo humare emails hote hain unko html format mein send kiya jaata hai ... hum jab likhte hain to hum to plain text mein likhte hain   ... lekin emails jab transfer hote hainto wo text format mein hote hain ...
 export async function sendEmail({to, subject, html, text}) {
     const mailOptions = {
