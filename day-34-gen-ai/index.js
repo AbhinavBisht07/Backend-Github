@@ -1,7 +1,36 @@
 import "dotenv/config"
 import readline from "readline/promises" //readline/promises kar dete hain yahan pe to aage promises create nahi karne padte humko ..
 import { ChatMistralAI } from "@langchain/mistralai";
-import { HumanMessage } from "langchain";
+import { HumanMessage, tool, createAgent, SystemMessage } from "langchain";
+import { sendEmail } from "./mail.service.js";
+import { webSearch } from "./webSearch.service.js";
+import * as z from "zod";
+
+
+const emailTool = tool(
+    sendEmail,
+    {
+        name: "emailTool",
+        description: "Use this tool to send an email.",
+        schema: z.object({
+            to: z.string().describe("The recipient's email address"),
+            html: z.string().describe("The HTML content of the email"),
+            subject: z.string().describe("The subject of the email"),
+        })
+    }
+)
+
+const webSearchTool = tool(
+    webSearch,
+    {
+        name: "searchInternet",
+        description: "Search the internet for any information, especially current events, latest news, or anything after 2023. Always use this tool if the answer might require updated information.",
+        schema: z.object({
+            query: z.string().describe("Search query for the internet")
+        })
+    }
+)
+
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -12,7 +41,29 @@ const model = new ChatMistralAI({
     model: "mistral-small-latest",
 })
 
-const messages = [];
+const agent = createAgent({
+    model,
+    tools: [emailTool, webSearchTool]
+})
+
+
+// const messages = [];
+const messages = [
+  new SystemMessage(`
+You are an AI assistant with access to tools.
+
+If a user asks about:
+- current events
+- latest news
+- information after 2023
+- unknown facts
+
+You MUST use the searchInternet tool before answering.
+
+Never say you don't have internet access.
+Always use the tool when the information may be outdated.
+`)
+];
 
 
 while (true) { 
@@ -27,11 +78,16 @@ while (true) {
         break;
     }
 
-    const response = await model.invoke(messages);
+    // const response = await model.invoke(messages);
+    const response = await agent.invoke( {messages} );
     
-    messages.push(response);
+    // messages.push(response);
+    messages.push(response.messages[response.messages.length - 1]);
 
-    console.log(`\x1b[34m[AI Chatbot:]\x1b[0m ${response.content}`);
+    // console.log(`\x1b[34m[AI Chatbot:]\x1b[0m ${response.content}`);
+    // console.log(response);
+    // console.log(response.messages[response.messages.length - 1].content);
+    console.log(`\x1b[34m[AI Chatbot:]\x1b[0m ${response.messages[response.messages.length - 1].content}`);
 }
 
 
