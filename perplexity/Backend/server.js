@@ -2,6 +2,7 @@ import "dotenv/config"; //automatically calls config() internally. Node loads th
 import app from "./src/app.js";
 import connectToDatabase from "./src/config/database.js";
 
+
 // import { testAi } from "./src/services/ai.service.js";
 
 const PORT = process.env.PORT || 3000

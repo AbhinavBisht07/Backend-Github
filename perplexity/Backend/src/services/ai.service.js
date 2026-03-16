@@ -7,9 +7,9 @@ const model = new ChatGoogleGenerativeAI({
 });
 
 
-export async function testAi(){
-    await model.invoke("Ok thanks thats all")
-    .then((response)=>{
-        console.log(response.text)
-    })
-}
+// export async function testAi(){
+//     await model.invoke("Ok thanks thats all")
+//     .then((response)=>{
+//         console.log(response.text)
+//     })
+// }
