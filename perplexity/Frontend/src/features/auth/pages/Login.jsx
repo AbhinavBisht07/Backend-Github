@@ -6,30 +6,33 @@ import { Navigate } from 'react-router'
 
 
 const Login = () => {
-    const [ email, setEmail ] = useState('')
-    const [ password, setPassword ] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
     const user = useSelector(state => state.auth.user)
     const loading = useSelector(state => state.auth.loading)
 
-    const {handleLogin} = useAuth();
+    const { handleLogin } = useAuth();
 
     const navigate = useNavigate();
 
     const submitForm = async (event) => {
-        event.preventDefault()
+        event.preventDefault();
 
         const payload = {
             email,
             password,
-        }
+        };
 
-        await handleLogin(payload)
-        navigate("/");
-    }
+        try {
+            await handleLogin(payload);
+        } catch (err) {
+            console.log("Login failed");
+        }
+    };
 
     // agar loading nhi hori hai and user present hai :-
-    if(!loading && user){
+    if (!loading && user) {
         return <Navigate to='/' replace />
     }
 

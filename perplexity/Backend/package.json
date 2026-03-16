@@ -23,7 +23,8 @@
     "langchain": "^0.3.37",
     "mongoose": "^9.2.4",
     "morgan": "^1.10.1",
-    "nodemailer": "^8.0.2"
+    "nodemailer": "^8.0.2",
+    "socket.io": "^4.8.3"
   },
   "volta": {
     "node": "18.20.8"

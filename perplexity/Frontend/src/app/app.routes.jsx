@@ -3,6 +3,7 @@ import Login from "../features/auth/pages/Login";
 import Register from "../features/auth/pages/Register";
 import Dashboard from "../features/chat/pages/Dashboard";
 import Protected from "../features/auth/components/Protected";
+import { Navigate } from "react-router";
 
 export const router = createBrowserRouter([
     {
@@ -19,5 +20,10 @@ export const router = createBrowserRouter([
         <Protected>
             <Dashboard />
         </Protected>
+    },
+    // ab agar user /dashboard bhi likhega to bhi / wale path mein navigate hojaega .. jo hai hi dashboard apna
+    {
+        path: "/dashboard",
+        element: <Navigate to='/' replace/>
     }
 ])
