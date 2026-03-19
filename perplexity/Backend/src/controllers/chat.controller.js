@@ -31,7 +31,7 @@ export async function sendMessage(req,res){
 
     
     // fetching all messages in a particular chat :-
-    const messages = await messageModel.find({ chat: chatId }).sort({ createdAt: 1 });
+    const messages = await messageModel.find({ chat: chatId || chat._id });
     
     const result = await generateResponse(messages);
 
@@ -44,9 +44,9 @@ export async function sendMessage(req,res){
     })
 
     res.status(201).json({
-        title,
-        chat,
-        userMessage,
+        // title,
+        chat: chat || {_id: chatId},
+        // userMessage,
         aiMessage
     })
 }
