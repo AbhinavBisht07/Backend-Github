@@ -7,27 +7,21 @@ export const useChat = ()=>{
 
     const dispatch = useDispatch();
 
-    const currentChatId = useSelector( state => state.chat.currentChatId); //new
+    // const currentChatId = useSelector( state => state.chat.currentChatId); //new
 
 
-    // async function handleSendMessage({message, chatId}){
-    async function handleSendMessage({message}){ //new
+    async function handleSendMessage({message, chatId}){
+    // async function handleSendMessage({message}){ //new
         dispatch(setLoading(true));
 
-
-        console.log('currentChatId at time of sending:', currentChatId) // ← add this
-
-
-        // const data = await sendMessage({message, chatId});
-        const data = await sendMessage({message, chat: currentChatId}); // new
+        const data = await sendMessage({message, chatId});
+        // const data = await sendMessage({message, chat: currentChatId}); // new
         const { chat, aiMessage } = data;
 
 
-         console.log('response from server:', chat._id, chat.title) // ← add this
-
-
         // Only create a new chat when no chatId is present
-        if(!currentChatId){
+        if(!chatId){
+        // if(!currentChatId){ // new
             dispatch(createNewChat({
                 chatId: chat._id,
                 title: chat.title
@@ -35,13 +29,13 @@ export const useChat = ()=>{
         }
 
         dispatch(addNewMessage({
-            chatId: chat._id,
+            chatId: chatId || chat._id,
             content: message,
             role: "user",
 
         }))
         dispatch(addNewMessage({
-            chatId: chat._id,
+            chatId: chatId || chat._id,
             content: aiMessage.content,
             role: aiMessage.role
         }))
@@ -68,20 +62,22 @@ export const useChat = ()=>{
     }
 
 
-    async function handleOpenChat(chatId){
-        const data = await getMessages(chatId);
-        const { messages } = data;
-
-        const formattedMessages = messages.map(msg => {
-            return ({
-                content: msg.content,
-                role: msg.role
+    async function handleOpenChat(chatId, chats){
+        if(chats[chatId].messages.length === 0) {
+            const data = await getMessages(chatId);
+            const { messages } = data;
+    
+            const formattedMessages = messages.map(msg => {
+                return ({
+                    content: msg.content,
+                    role: msg.role
+                })
             })
-        })
-        dispatch(addMessages({
-            chatId,
-            messages: formattedMessages,
-        }))
+            dispatch(addMessages({
+                chatId,
+                messages: formattedMessages,
+            }))
+        }
         dispatch(setCurrentChatId(chatId));
     }
 

@@ -1,10 +1,15 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatMistralAI } from "@langchain/mistralai";
 import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
+import { tool } from "@langchain/core/tools";
+import * as z from "zod";
+import { webSearch } from "./webSearch.service.js";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
 
 const geminiModel = new ChatGoogleGenerativeAI({
-    model: "gemini-2.5-flash-lite",
-    // model: "gemini-2.5-flash",
+    // model: "gemini-2.5-flash-lite",
+    // model: "gemini-flash-latest",
+    model: "gemini-2.5-flash",
     apiKey: process.env.GEMINI_API_KEY
 });
 
@@ -14,20 +19,42 @@ const mistralModel = new ChatMistralAI({
 });
 
 
+const webSearchTool = tool(
+    webSearch,
+    {
+        name: "searchInternet",
+        description: "Search the internet for any information, especially current events, latest news, or anything after 2023. Always use this tool if the answer might require updated information.",
+        schema: z.object({
+            query: z.string().describe("Search query for the internet")
+        })
+    }
+)
+
+const agent = createReactAgent({
+    llm: geminiModel,
+    tools: [webSearchTool],
+});
+
+
+
 export async function generateResponse(messages) {
     // const response = await geminiModel.invoke([
     //     new HumanMessage(messages)
     // ])
-    const response = await geminiModel.invoke(messages.map(msg=>{
-        if(msg.role == "user"){
-            return new HumanMessage(msg.content);
-        }else if(msg.role == "ai"){
-            return new AIMessage(msg.content);
-        }
-    }))
+
+    // when we invoke agent we send messages in object format
+    const response = await agent.invoke({
+        messages: messages.map(msg => {
+            if (msg.role === "user") {
+                return new HumanMessage(msg.content);
+            } else if (msg.role === "ai") {
+                return new AIMessage(msg.content);
+            }
+        })
+    })
     // map() function bhi array hi return kkarta hai .. to ab humko response mein ek naya array mil jaega HumanMessage and AIMessage ka
 
-    return response.text
+    return response.messages[response.messages.length - 1].content; // Return the text of the last message in the response
 }
 
 export async function generateChatTitle(message) {
@@ -40,7 +67,7 @@ export async function generateChatTitle(message) {
         new HumanMessage(`Generate a title for a chat conversation based on the following first message: "${message}"`)
     ])
 
-    return response.text;
+    return response.content;
 }
 
 

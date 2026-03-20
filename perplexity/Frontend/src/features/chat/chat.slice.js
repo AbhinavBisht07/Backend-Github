@@ -26,10 +26,14 @@ const chatSlice = createSlice({
         // For rendering all messages when we open an existing chat 
         addMessages: (state, action) => {
             const { chatId, messages } = action.payload;
-            // state.chats[ chatId ].messages.push(...messages) //bug
-            state.chats[ chatId ].messages = messages;
-            // .push() was creating a bug because it was never clearing the old array, it just kept shoving new items into it. So every time I opened an existing chat, it pushes the same messages fetched from the API on top of whatever was already there.
+            state.chats[ chatId ].messages.push(...messages) 
         },
+        // addMessages: (state, action) => {
+        //     const { chatId, messages } = action.payload;
+        //     // state.chats[ chatId ].messages.push(...messages) //bug
+        //     state.chats[ chatId ].messages = messages;
+        //     // .push() was creating a bug because it was never clearing the old array, it just kept shoving new items into it. So every time I opened an existing chat, it pushes the same messages fetched from the API on top of whatever was already there.
+        // },
         setChats: (state, action)=>{
             state.chats = action.payload
         },
