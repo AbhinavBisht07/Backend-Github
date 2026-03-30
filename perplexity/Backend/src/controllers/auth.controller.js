@@ -1,6 +1,8 @@
 import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../services/mail.service.js";
+import blacklistModel from "../models/blacklist.model.js";
+import redis from "../config/cache.js";
 
 /**
  * @route POST /api/auth/register
@@ -110,7 +112,7 @@ export async function login(req, res) {
     res.status(200).json({
         message: "Login successfull.",
         success: true,
-        user:{
+        user: {
             id: user._id,
             username: user.username,
             email: user.email
@@ -120,16 +122,55 @@ export async function login(req, res) {
 
 
 /**
+ * @route POST /api/auth/login
+ * @description  Login user and return JWT token
+ * @access Public
+ * @body { email, password }
+ */
+export async function logout(req, res) {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({
+                message: "Unauthorized",
+                success: false,
+                err: "No token provided"
+            })
+        }
+
+        // blacklisting token :-
+        // await blacklistModel.create({ token }, {expiresIn: "1d"});
+        await redis.set(token, Date.now().toString(), "EX", 60 * 60 * 24 * 7);
+
+        // remove token from client side :-
+        res.clearCookie("token");
+
+        res.status(200).json({
+            message: "User logged out successfully."
+        })
+    } catch (err) {
+        res.status(500).json({
+            message: "Internal server error",
+            success: false,
+            err: err.message
+        })
+    }
+}
+
+
+
+/**
  * @route GET /api/auth/get-me
  * @desc Get current logged in user's details
  * @access Private
  */
-export async function getMe(req,res){
+export async function getMe(req, res) {
     const userId = req.user.id;
 
     const user = await userModel.findById(userId).select("-password");
 
-    if(!user){
+    if (!user) {
         return res.status(404).json({
             message: "User not found",
             success: false,

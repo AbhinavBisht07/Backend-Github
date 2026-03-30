@@ -33,22 +33,45 @@ export async function sendMessage(req,res){
     // fetching all messages in a particular chat :-
     const messages = await messageModel.find({ chat: chatId || chat._id });
     
-    const result = await generateResponse(messages);
 
+     // SSE Headers — tells browser "keep connection open, data is coming"
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    // Send chat metadata first (so frontend knows which chat this belongs to)
+    res.write(`event: metadata\ndata: ${JSON.stringify({ chat: chat || { _id: chatId } })}\n\n`);
+
+    // Stream tokens to frontend & collect full response simultaneously
+    let fullResponse = "";
+
+    const stream = generateResponse(messages);
+
+    for await(const token of stream){
+        fullResponse += token; // keep building full response for DB storage
+        res.write(`event: token\ndata: ${JSON.stringify({token})}\n\n`); // send token to frontend
+    }
     
-    // storing aiMessage in database :-
+    // const result = await generateResponse(messages);
+    // Store complete AI response in DB(only after streaming is done)
     const aiMessage = await messageModel.create({
         chat: chatId || chat._id,
-        content: result,
+        content: fullResponse,
         role: "ai"
     })
 
-    res.status(201).json({
-        // title,
-        chat: chat || {_id: chatId},
-        // userMessage,
-        aiMessage
-    })
+    // Send Final event sofrontend knows streaming is complete 
+    res.write(`event: done\ndata: ${JSON.stringify({aiMessage})}\n\n`);
+    res.end();
+    
+    // storing aiMessage in database :-
+
+    // res.status(201).json({
+    //     // title,
+    //     chat: chat || {_id: chatId},
+    //     // userMessage,
+    //     aiMessage
+    // })
 }
 
 // ek user ki saari chats fetch karke return karega
