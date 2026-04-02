@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router'
-
+import { Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const [showPassword, setShowPassword] = useState(false)
 
     const user = useSelector(state => state.auth.user)
     const loading = useSelector(state => state.auth.loading)
@@ -67,15 +69,29 @@ const Login = () => {
                             <label htmlFor="password" className="mb-2 block text-sm font-medium text-zinc-200">
                                 Password
                             </label>
-                            <input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                placeholder="Enter your password"
-                                required
-                                className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
-                            />
+                            <div className='relative'>
+                                <input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(event) => {
+                                        setPassword(event.target.value)
+                                        dispatch(setError(null))
+                                    }}
+                                    placeholder="Create a password"
+                                    required
+                                    className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
+                                />
+                                {password.length > 0 && (
+                                    <button
+                                        type='button'
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        className='absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white'
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         <button

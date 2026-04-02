@@ -1,28 +1,45 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { setError } from '../auth.slice'
+import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [usernameError, setUsernameError] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState("")
+
+
   const { handleRegister } = useAuth();
 
   const navigate = useNavigate();
 
+  const error = useSelector((state) => state.auth.error);
+
+  const dispatch = useDispatch();
+
   const submitForm = async (event) => {
     event.preventDefault()
 
-    const payload = {
-      username,
-      email,
-      password,
+    // password confirmation :-
+    if(password !== confirmPassword){
+      dispatch(setError("Passwords do not match"));
+      return;
     }
 
+    const payload = { username, email, password }
+
     try {
-      const response = await handleRegister(payload)
-      navigate("/")
+      const response = await handleRegister(payload);
+      navigate("/verify-email", {
+        state: { email }
+      }) // this line oes 2 works :- it redirects user to verify-email page and it passes emails' data to that page 
     } catch (err) {
       console.error(err)
     }
@@ -48,7 +65,10 @@ const Register = () => {
                 id="username"
                 type="text"
                 value={username}
-                onChange={(event) => setUsername(event.target.value)}
+                onChange={(event) => {
+                  setUsername(event.target.value)
+                  dispatch(setError(null))
+                }}
                 placeholder="Choose a username"
                 required
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
@@ -63,7 +83,10 @@ const Register = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value)
+                  dispatch(setError(null))
+                }}
                 placeholder="you@example.com"
                 required
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
@@ -74,16 +97,65 @@ const Register = () => {
               <label htmlFor="password" className="mb-2 block text-sm font-medium text-zinc-200">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Create a password"
-                required
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
-              />
+              <div className='relative'>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value)
+                    dispatch(setError(null))
+                  }}
+                  placeholder="Create a password"
+                  required
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
+                />
+                {(password.length > 0 || confirmPassword.length > 0) > 0 && (
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white'
+                  >
+                    {showPassword ? <EyeOff size={18}/> : <Eye size={18}/> }
+                  </button>
+                )}
+              </div>
             </div>
+
+            <div>
+              <label className='mb-2 block text-sm font-medium text-zinc-200'>
+                Confirm Password
+              </label>
+              <div className='relative'>
+                <input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(event) => {
+                    setConfirmPassword(event.target.value)
+                    dispatch(setError(null))
+                  }}
+                  placeholder="Confirm your password"
+                  required
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
+                />
+                {(password.length > 0 || confirmPassword.length > 0) && (
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white'
+                  >
+                    {showPassword ? <EyeOff size={18}/> : <Eye size={18}/> }
+                  </button>
+                )}
+              </div>
+            </div>
+
+
+            {error && (
+              <p className='text-red-500 text-sm mt-2'>{error}</p>
+            )}
+
 
             <button
               type="submit"

@@ -56,12 +56,16 @@ export function useAuth() {
             const data = await getMe();
             dispatch(setUser(data.user))
         } catch (err) {
-            dispatch(setError(err.response?.data?.message || "Failed to fetch user data"))
+            if(err.response?.status === 401){
+                // not setting error for unauthorized user(not logged in user)
+                dispatch(resetAuth());
+            } else {
+                dispatch(setError(err.response?.data?.message || "Failed to fetch user data"))
+            }
         } finally {
             dispatch(setLoading(false));
         }
     }
 
     return { handleRegister, handleLogin, handleGetMe, handleLogout }
-
 }
