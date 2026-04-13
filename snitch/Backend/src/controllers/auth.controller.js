@@ -76,7 +76,29 @@ export const login = async (req, res) => {
 
 
 export const googleCallback = async (req, res) => {
-    console.log(req.user);
+    // console.log(req.user);
+    const {id, displayName, emails, photos} = req.user
+    const email = emails[0].value;
+    const profilePic = photos[0].value;
+
+
+    let user = await userModel.findOne({ email });
+
+    // agar user exist nahi krta mtlb pehli baar website mein aaya hai and uska account register karna padega
+    if(!user){
+        user = await userModel.create({
+            email, 
+            googleId: id,
+            fullname: displayName,
+        })
+    }
+
+    const token = jwt.sign(
+        { id: user._id },
+        Config.JWT_SECRET,
+        { expiresIn: "7d" }
+    );
+    res.cookie("token", token);
 
     res.redirect("http://localhost:5173/");
 }
