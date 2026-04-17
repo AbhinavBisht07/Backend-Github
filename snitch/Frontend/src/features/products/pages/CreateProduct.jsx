@@ -48,7 +48,7 @@ const FieldLabel = ({ children }) => (
 const inputCls = `
   w-full bg-[#0e0e15]/90 backdrop-blur-md text-white placeholder-[#6b6780]
   border border-[#4a4455]/40 rounded-lg
-  px-4 py-3 text-sm font-medium font-['Manrope',sans-serif]
+  px-4 py-3 text-sm font-medium font-sans antialiased tracking-tight
   outline-none transition-all duration-200
   focus:border-[#7C3AED]/60 focus:shadow-[0_0_0_3px_rgba(124,58,237,0.12)]
   hover:border-[#4a4455]/60
@@ -142,7 +142,7 @@ const CreateProduct = () => {
 
   return (
     <div
-      className="min-h-screen font-['Manrope',sans-serif] relative"
+      className="min-h-screen font-sans antialiased tracking-tight relative"
       style={{ color: '#e4e1eb' }}
     >
       {/* ── Background Image Layer ── */}

@@ -119,8 +119,12 @@ const Login = () => {
     }
     try {
       setLoading(true);
-      await handleLogin(form);
-      navigate("/");
+      const user = await handleLogin(form);
+      if(user.role === "seller"){
+        navigate("/seller/dashboard");
+      }else{
+        navigate("/");
+      }
     } catch (err) {
       setError(err?.response?.data?.message || "Login failed. Please verify your credentials.");
     } finally {
@@ -129,7 +133,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex font-['Manrope',sans-serif] bg-[#0E0E15]">
+    <div className="min-h-screen w-full flex font-sans antialiased tracking-tight bg-[#0E0E15]">
       
       {/* ── Left Side Image Slideshow & Overlay (Hidden on Mobile) ── */}
       <div className="hidden lg:flex lg:w-[55%] relative h-screen sticky top-0 overflow-hidden bg-[#0E0E15] flex-col justify-between p-12">

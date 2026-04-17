@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { validateRegisterUser, validateLoginUser } from "../validator/auth.validator.js";
-import { register, login, googleCallback } from "../controllers/auth.controller.js";
+import { register, login, googleCallback, getMe } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { Config } from "../config/config.js";
-import { config } from "dotenv";
+import { authenticateUser } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -23,5 +23,12 @@ router.get("/google/callback",
     }),
     googleCallback
 )
+
+/**
+ * @route GET /api/auth/getMe
+ * @description Get the current user
+ * @access Private
+ */
+router.get('/getMe', authenticateUser, getMe)
 
 export default router;

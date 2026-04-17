@@ -157,7 +157,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex font-['Manrope',sans-serif] bg-[#0E0E15]">
+    <div className="min-h-screen w-full flex font-sans antialiased tracking-tight bg-[#0E0E15]">
 
       {/* ── Left Side Image Slideshow & Overlay (Hidden on Mobile) ── */}
       <div className="hidden lg:flex lg:w-[55%] relative h-screen sticky top-0 overflow-hidden bg-[#0E0E15] flex-col justify-between p-12">
