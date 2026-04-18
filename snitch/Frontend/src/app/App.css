@@ -14,3 +14,80 @@
 #root {
   min-height: 100vh;
 }
+
+/* ══════════════════════════════════════
+   Snitch Scrollbar — page-level (html)
+   Applies to Home, Dashboard, and any
+   full-page scroll. Hover anywhere on
+   the page to turn it purple.
+══════════════════════════════════════ */
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(74, 68, 85, 0.45) transparent;
+}
+
+html:hover {
+  scrollbar-color: rgba(124, 58, 237, 0.6) transparent;
+}
+
+html::-webkit-scrollbar {
+  width: 5px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: rgba(74, 68, 85, 0.45);
+  border-radius: 999px;
+  transition: background-color 0.25s ease;
+}
+
+html:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(124, 58, 237, 0.6);
+}
+
+html::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ══════════════════════════════════════
+   Snitch Scrollbar — element-level
+   Add class "snitch-scroll" to any
+   scrollable div/section to get the
+   same styled scrollbar locally.
+══════════════════════════════════════ */
+
+.snitch-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(74, 68, 85, 0.45) transparent;
+}
+
+.snitch-scroll:hover {
+  scrollbar-color: rgba(124, 58, 237, 0.6) transparent;
+}
+
+.snitch-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.snitch-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.snitch-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(74, 68, 85, 0.45);
+  border-radius: 999px;
+  transition: background-color 0.25s ease;
+}
+
+.snitch-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(124, 58, 237, 0.6);
+}
+
+.snitch-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}

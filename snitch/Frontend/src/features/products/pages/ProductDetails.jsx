@@ -8,7 +8,6 @@ const ProductDetails = () => {
     const [product, setProduct] = useState(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [isGalleryHovered, setIsGalleryHovered] = useState(false);
     
     const { handleGetProductDetails } = useProduct();
     const thumbnailRef = useRef(null);
@@ -100,11 +99,7 @@ const ProductDetails = () => {
                 <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16 flex-1 min-h-0">
                     
                     {/* ── Left Column: Image Gallery ── */}
-                    <div 
-                        className="flex flex-col gap-3 w-full h-full min-h-[300px]"
-                        onMouseEnter={() => setIsGalleryHovered(true)}
-                        onMouseLeave={() => setIsGalleryHovered(false)}
-                    >
+                    <div className="flex flex-col gap-3 w-full h-full min-h-[300px]">
                         {/* Main Image — always object-contain so nothing is cropped */}
                         <div className="relative aspect-square lg:aspect-auto lg:flex-1 bg-[#13131a] rounded-2xl overflow-hidden lg:min-h-0 flex items-center justify-center">
                             <img 
@@ -122,11 +117,7 @@ const ProductDetails = () => {
                                     e.preventDefault();
                                     thumbnailRef.current.scrollLeft += e.deltaY;
                                 }}
-                                className="flex gap-2.5 overflow-x-auto rounded-xl bg-[#13131a] p-2.5 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full"
-                                style={{ 
-                                    scrollbarWidth: 'thin', 
-                                    scrollbarColor: isGalleryHovered ? 'rgba(124,58,237,0.5) transparent' : 'rgba(74,68,85,0.5) transparent'
-                                }}
+                                className="snitch-scroll flex gap-2.5 overflow-x-auto rounded-xl bg-[#13131a] p-2.5"
                             >
                                 {images.map((img, idx) => {
                                     const src = img.url || img.secure_url || img.src;
@@ -150,7 +141,7 @@ const ProductDetails = () => {
                     </div>
 
                     {/* ── Right Column: Details & Actions ── */}
-                    <div className="flex flex-col lg:overflow-y-auto pr-0 lg:pr-4 pb-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#4a4455]/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#7c3aed]/50">
+                    <div className="snitch-scroll flex flex-col lg:overflow-y-auto pr-0 lg:pr-4 pb-4">
                         
                         <div className="mb-8">
                             <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white tracking-tight font-semibold mb-4 leading-tight">

@@ -199,7 +199,7 @@ const Register = () => {
       </div>
 
       {/* ── Right Side Form ── */}
-      <div className="w-full lg:w-[45%] flex flex-col items-center justify-center py-10 px-4 overflow-y-auto relative">
+      <div className="snitch-scroll w-full lg:w-[45%] flex flex-col items-center justify-center py-10 px-4 overflow-y-auto relative">
 
         {/* Ambient glow blob for the form side */}
         <div
