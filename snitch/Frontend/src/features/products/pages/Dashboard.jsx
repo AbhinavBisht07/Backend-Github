@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useProduct } from '../hook/useProduct';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ProductCard = ({ product }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const imagesCount = product.images?.length || 0;
-    
+    const navigate = useNavigate();
+
     // Safely get the active image
     const activeImageObj = product.images?.[currentImageIndex];
     const image = activeImageObj?.url || activeImageObj?.secure_url || activeImageObj?.src || "https://placehold.co/600x600/1b1b22/7c3aed?text=No+Image";
@@ -87,7 +89,9 @@ const ProductCard = ({ product }) => {
                 
                 {/* Actions */}
                 <div className="flex items-center gap-3 mt-auto pt-4 border-t border-[#4a4455]/20">
-                    <button className="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest text-[#ccc3d8] hover:text-white hover:bg-[#4a4455]/30 transition-colors">
+                    <button
+                    onClick={()=> { navigate(`/seller/product/${product._id}`) }} 
+                    className="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest text-[#ccc3d8] hover:text-white hover:bg-[#4a4455]/30 transition-colors">
                         Edit
                     </button>
                     <button className="flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest text-[#ffb4ab] hover:text-white hover:bg-[#93000a]/50 transition-colors">

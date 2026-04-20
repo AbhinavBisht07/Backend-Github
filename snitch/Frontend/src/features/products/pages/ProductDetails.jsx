@@ -6,18 +6,22 @@ import { useProduct } from '../hook/useProduct';
 const ProductDetails = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
+    const [selectedVariant, setSelectedVariant] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     
-    const { handleGetProductDetails } = useProduct();
     const thumbnailRef = useRef(null);
     const user = useSelector(state => state.auth.user);
+    const { handleGetProductDetails } = useProduct();
 
     async function fetchProductDetails(){
         try {
             setIsLoading(true);
             const data = await handleGetProductDetails(productId);
             setProduct(data);
+            setSelectedVariant(null);
+            setSelectedSize(null);
             setActiveImageIndex(0);
         } catch (error) {
             console.error("Failed to fetch product:", error);
@@ -51,8 +55,16 @@ const ProductDetails = () => {
         );
     }
 
-    const images = product.images || [];
-    const activeImage = images[activeImageIndex]?.url || images[activeImageIndex]?.secure_url || images[activeImageIndex]?.src || "https://placehold.co/800x800/1b1b22/7c3aed?text=No+Image";
+    const handleVariantSelect = (variant) => {
+        setSelectedVariant(variant);
+        setSelectedSize(null);
+        setActiveImageIndex(0);
+    };
+
+    const displayPrice = selectedVariant?.price?.amount ? selectedVariant.price : product.price;
+    const displayImages = selectedVariant?.images?.length > 0 ? selectedVariant.images : (product.images || []);
+    
+    const activeImage = displayImages[activeImageIndex]?.url || displayImages[activeImageIndex]?.secure_url || displayImages[activeImageIndex]?.src || "https://placehold.co/800x800/1b1b22/7c3aed?text=No+Image";
 
     return (
         <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-[#0e0e15] text-[#e4e1eb] font-sans antialiased tracking-tight flex flex-col">
@@ -110,7 +122,7 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Thumbnail Strip */}
-                        {images.length > 1 && (
+                        {displayImages.length > 1 && (
                             <div 
                                 ref={thumbnailRef}
                                 onWheel={(e) => {
@@ -119,7 +131,7 @@ const ProductDetails = () => {
                                 }}
                                 className="snitch-scroll flex gap-2.5 overflow-x-auto rounded-xl bg-[#13131a] p-2.5"
                             >
-                                {images.map((img, idx) => {
+                                {displayImages.map((img, idx) => {
                                     const src = img.url || img.secure_url || img.src;
                                     const isActive = idx === activeImageIndex;
                                     return (
@@ -149,12 +161,155 @@ const ProductDetails = () => {
                             </h1>
                             <div className="flex items-end gap-3 mb-8">
                                 <p className="text-2xl sm:text-3xl font-semibold text-[#d2bbff]">
-                                    {product.price?.amount?.toLocaleString('en-US') || 0}
+                                    {displayPrice?.amount?.toLocaleString('en-US') || 0}
                                 </p>
                                 <span className="text-sm font-bold tracking-widest uppercase text-[#958da1] mb-1.5">
-                                    {product.price?.currency || 'USD'}
+                                    {displayPrice?.currency || 'USD'}
                                 </span>
                             </div>
+
+                            {/* Variant Selection */}
+                            {product.variants?.length > 0 && (
+                                <div className="mb-6 p-4 rounded-2xl border border-[#4a4455]/20 bg-[#13131a]">
+                                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#958da1] mb-3">Options & Designs</h3>
+                                    <div className="flex flex-wrap gap-3 items-center">
+                                        <button
+                                            onClick={() => handleVariantSelect(null)}
+                                            className="flex flex-col items-center justify-start group transition-all w-[72px]"
+                                        >
+                                            <div className={`relative w-[72px] h-24 rounded-xl overflow-hidden border mb-2 transition-all shrink-0 ${
+                                                selectedVariant === null 
+                                                    ? 'border-[#7c3aed] ring-2 ring-[#7c3aed]/50 ring-offset-2 ring-offset-[#13131a]' 
+                                                    : 'border-[#4a4455]/30 group-hover:border-[#ccc3d8]/50'
+                                            }`}>
+                                                {product.images?.[0] ? (
+                                                    <img src={product.images[0].url || product.images[0].secure_url} alt="Original" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full bg-[#0e0e15] flex items-center justify-center">...</div>
+                                                )}
+                                            </div>
+                                            <span className={`text-[10px] uppercase tracking-wide font-bold transition-all text-center leading-tight ${selectedVariant === null ? 'text-white' : 'text-[#958da1] group-hover:text-[#ccc3d8]'}`}>
+                                                Original
+                                            </span>
+                                        </button>
+                                        
+                                        {product.variants.map((v, i) => {
+                                            // Parse attributes securely
+                                            let attrObj = v.attributes;
+                                            if (typeof attrObj === 'string') {
+                                                try { attrObj = JSON.parse(attrObj); } catch(e) { attrObj = {}; }
+                                            } else if (attrObj instanceof Map) {
+                                                attrObj = Object.fromEntries(attrObj);
+                                            }
+                                            
+                                            // Extract Size so it isn't part of the main option button label
+                                            const { Size, ...otherAttrs } = attrObj || {};
+                                            const Color = otherAttrs.Color;
+                                            
+                                            const fallbackLabel = Object.keys(otherAttrs).length > 0 
+                                                ? Object.entries(otherAttrs).map(([k, val]) => `${val}`).join(' · ')
+                                                : `Option ${i + 1}`;
+                                                
+                                            // Use Color as primary label beneath the image; fallback to the combined string
+                                            const label = Color ? Color : fallbackLabel;
+                                            
+                                            const isSelected = selectedVariant?._id === v._id;
+                                            const hasImage = v.images && v.images.length > 0;
+                                            
+                                            if (hasImage) {
+                                                return (
+                                                    <button
+                                                        key={v._id}
+                                                        onClick={() => handleVariantSelect(v)}
+                                                        title={fallbackLabel}
+                                                        className="flex flex-col items-center justify-start group transition-all w-[72px]"
+                                                    >
+                                                        <div className={`relative w-[72px] h-24 rounded-xl overflow-hidden border mb-2 transition-all shrink-0 ${
+                                                            isSelected 
+                                                                ? 'border-[#7c3aed] ring-2 ring-[#7c3aed]/50 ring-offset-2 ring-offset-[#13131a]' 
+                                                                : 'border-[#4a4455]/30 group-hover:border-[#ccc3d8]/50'
+                                                        }`}>
+                                                            <img src={v.images[0].url || v.images[0].secure_url} alt={label} className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <span className={`text-[10px] uppercase tracking-wide font-bold transition-all text-center leading-tight ${isSelected ? 'text-white' : 'text-[#958da1] group-hover:text-[#ccc3d8]'}`}>
+                                                            {label}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            }
+                                            
+                                            return (
+                                                <button
+                                                    key={v._id}
+                                                    onClick={() => handleVariantSelect(v)}
+                                                    title={fallbackLabel}
+                                                    className={`h-10 px-4 rounded-xl text-xs font-bold transition-all border ${
+                                                        isSelected 
+                                                            ? 'border-[#7c3aed] ring-2 ring-[#7c3aed]/50 ring-offset-2 ring-offset-[#13131a] bg-[#7c3aed] text-white' 
+                                                            : 'border-[#4a4455]/30 bg-[#0e0e15] text-[#ccc3d8] hover:border-[#7c3aed] hover:text-white'
+                                                    }`}
+                                                >
+                                                    {label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    
+                                    {selectedVariant && (
+                                        <p className="mt-4 text-[11px] font-medium text-[#958da1]">
+                                            <span className={selectedVariant.stock > 0 ? "text-white" : "text-[#ffb4ab]"}>
+                                                {selectedVariant.stock} units available
+                                            </span>
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Size Selection (Only shows if selected variant has multiple sizes) */}
+                            {(() => {
+                                let sizes = [];
+                                if (selectedVariant) {
+                                    let attrObj = selectedVariant.attributes;
+                                    if (typeof attrObj === 'string') {
+                                        try { attrObj = JSON.parse(attrObj); } catch(e) {}
+                                    } else if (attrObj instanceof Map) {
+                                        attrObj = Object.fromEntries(attrObj);
+                                    }
+                                    if (attrObj && attrObj.Size) {
+                                        sizes = attrObj.Size.split(',').map(s => s.trim()).filter(Boolean);
+                                    }
+                                }
+                                
+                                if (sizes.length > 0) {
+                                    return (
+                                        <div className="mb-8 p-4 rounded-2xl border border-[#4a4455]/20 bg-[#13131a]">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#958da1]">Select Size</h3>
+                                                <span className="text-[10px] uppercase font-bold text-[#4a4455] hover:text-white cursor-pointer transition-colors border-b border-[#4a4455] hover:border-white">Size Guide</span>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {sizes.map(size => (
+                                                    <button
+                                                        key={size}
+                                                        onClick={() => setSelectedSize(size)}
+                                                        className={`h-11 min-w-[3.5rem] px-3 rounded-lg text-xs font-bold tracking-wide transition-all ${
+                                                            selectedSize === size
+                                                                ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]'
+                                                                : 'bg-[#0e0e15] border border-[#4a4455]/50 text-[#ccc3d8] hover:border-white hover:text-white'
+                                                        }`}
+                                                    >
+                                                        {size}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            {!selectedSize && (
+                                                <p className="mt-2 text-[10px] text-[#ffb4ab] font-medium tracking-wide">Please select a size to continue</p>
+                                            )}
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()}
                             
                             {/* Product Description */}
                             <div className="prose prose-invert max-w-none">

@@ -56,7 +56,7 @@ const inputCls = `
 
 // ── CreateProduct Page ────────────────────────────────────────────────────────
 
-const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'AED', 'JPY'];
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'JPY'];
 const MAX_IMAGES = 7;
 
 const CreateProduct = () => {
