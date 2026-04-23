@@ -25,7 +25,11 @@ const ProductDetails = () => {
             setIsLoading(true);
             const data = await handleGetProductDetails(productId);
             setProduct(data);
-            setSelectedVariant(null);
+            if (data.variants?.length > 0) {
+                setSelectedVariant(data.variants[0]);
+            } else {
+                setSelectedVariant(null);
+            }
             setSelectedSize(null);
             setActiveImageIndex(0);
         } catch (error) {
@@ -74,36 +78,7 @@ const ProductDetails = () => {
     return (
         <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-[#0e0e15] text-[#e4e1eb] font-sans antialiased tracking-tight flex flex-col">
 
-            {/* ── Navbar ── */}
-            <header className="sticky top-0 z-50 bg-[#0e0e15]/80 backdrop-blur-md border-b-[0.5px] border-[#4a4455]/20">
-                <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-                    <Link to="/" className="text-xl font-bold tracking-tighter text-white tracking-tight font-semibold hover:opacity-80 transition-opacity flex items-center gap-2">
-                        <div className="w-6 h-6 bg-[#7C3AED] rounded flex items-center justify-center">
-                            <span className="text-white text-xs leading-none">S</span>
-                        </div>
-                        SNITCH.
-                    </Link>
 
-                    <div className="flex items-center gap-6">
-                        {user?.role === 'seller' && (
-                            <Link to="/seller/dashboard" className="text-xs font-bold uppercase tracking-widest text-[#d2bbff] hover:text-white transition-colors hidden sm:block">
-                                Seller Dashboard
-                            </Link>
-                        )}
-                        {!user ? (
-                            <Link to="/login" className="text-xs font-bold uppercase tracking-widest text-white px-4 py-2 rounded bg-[#7c3aed] hover:bg-[#523787] transition-colors">
-                                Sign In
-                            </Link>
-                        ) : (
-                            <div className="relative group cursor-pointer">
-                                <div className="w-8 h-8 rounded-full bg-[#1b1b22] border-2 border-[#1b1b22] overflow-hidden group-hover:border-[#7C3AED]/50 transition-colors">
-                                    <img src={`https://ui-avatars.com/api/?name=${user.fullname || 'St'}&background=7c3aed&color=fff`} alt="Avatar" className="w-full h-full object-cover" />
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </header>
 
             {/* ── Main Content ── */}
             <main className="max-w-7xl mx-auto w-full px-5 sm:px-8 py-6 lg:py-8 lg:h-[calc(100vh-64px)] flex flex-col lg:overflow-hidden">
@@ -160,7 +135,7 @@ const ProductDetails = () => {
                     <div className="snitch-scroll flex flex-col lg:overflow-y-auto pr-0 lg:pr-4 pb-4">
 
                         <div className="mb-8">
-                            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white tracking-tight font-semibold mb-4 leading-tight">
+                            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-semibold mb-4 leading-tight">
                                 {product.title}
                             </h1>
                             <div className="flex items-end gap-3 mb-8">
@@ -177,25 +152,6 @@ const ProductDetails = () => {
                                 <div className="mb-6 p-4 rounded-2xl border border-[#4a4455]/20 bg-[#13131a]">
                                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#958da1] mb-3">Options & Designs</h3>
                                     <div className="flex flex-wrap gap-3 items-center">
-                                        <button
-                                            onClick={() => handleVariantSelect(null)}
-                                            className="flex flex-col items-center justify-start group transition-all w-[72px]"
-                                        >
-                                            <div className={`relative w-[72px] h-24 rounded-xl overflow-hidden border mb-2 transition-all shrink-0 ${selectedVariant === null
-                                                ? 'border-[#7c3aed] ring-2 ring-[#7c3aed]/50 ring-offset-2 ring-offset-[#13131a]'
-                                                : 'border-[#4a4455]/30 group-hover:border-[#ccc3d8]/50'
-                                                }`}>
-                                                {product.images?.[0] ? (
-                                                    <img src={product.images[0].url || product.images[0].secure_url} alt="Original" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full bg-[#0e0e15] flex items-center justify-center">...</div>
-                                                )}
-                                            </div>
-                                            <span className={`text-[10px] uppercase tracking-wide font-bold transition-all text-center leading-tight ${selectedVariant === null ? 'text-white' : 'text-[#958da1] group-hover:text-[#ccc3d8]'}`}>
-                                                Original
-                                            </span>
-                                        </button>
-
                                         {product.variants.map((v, i) => {
                                             // Parse attributes securely
                                             let attrObj = v.attributes;
@@ -358,6 +314,8 @@ const ProductDetails = () => {
                                     }
 
                                     let requiresSize = false;
+                                    let parsedColor = null;
+                                    
                                     if (selectedVariant) {
                                         let attrObj = selectedVariant.attributes;
                                         if (typeof attrObj === 'string') {
@@ -367,6 +325,9 @@ const ProductDetails = () => {
                                         }
                                         if (attrObj && attrObj.Size && attrObj.Size.split(',').length > 1) {
                                             requiresSize = true;
+                                        }
+                                        if (attrObj && attrObj.Color) {
+                                            parsedColor = attrObj.Color;
                                         }
                                     }
 
@@ -378,7 +339,9 @@ const ProductDetails = () => {
                                     // Pass the selection logic securely
                                     handleAddItem({
                                         productId: product._id,
-                                        variantId: selectedVariant?._id || "none"
+                                        variantId: selectedVariant?._id || "none",
+                                        size: selectedSize,
+                                        color: parsedColor
                                     }).then(() => setCartStatus({ type: 'success', message: 'Item perfectly added to cart!' }))
                                       .catch(err => {
                                           console.error("Cart Error:", err);

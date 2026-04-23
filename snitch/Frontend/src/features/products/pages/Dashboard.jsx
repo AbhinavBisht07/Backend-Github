@@ -115,23 +115,7 @@ const Dashboard = () => {
     return (
         <div className="min-h-screen bg-[#0e0e15] text-[#e4e1eb] font-sans antialiased tracking-tight">
             
-            {/* ── Navbar ── */}
-            <header className="sticky top-0 z-50 bg-[#0e0e15]/80 backdrop-blur-md border-b-[0.5px] border-[#4a4455]/20">
-                <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-                    <Link to="/" className="text-xl font-bold tracking-tighter text-white tracking-tight font-semibold hover:opacity-80 transition-opacity flex items-center gap-2">
-                        <div className="w-6 h-6 bg-[#7C3AED] rounded flex items-center justify-center">
-                            <span className="text-white text-xs leading-none">S</span>
-                        </div>
-                        SNITCH.
-                    </Link>
-                    
-                    <div className="relative group cursor-pointer">
-                        <div className="w-8 h-8 rounded-full bg-[#1b1b22] border-2 border-[#1b1b22] overflow-hidden group-hover:border-[#7C3AED]/50 transition-colors">
-                            <img src="https://ui-avatars.com/api/?name=St&background=7c3aed&color=fff" alt="User Avatar" className="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                </div>
-            </header>
+
 
             {/* ── Main Content ── */}
             <main className="max-w-7xl mx-auto px-5 sm:px-8 py-10 lg:py-16">

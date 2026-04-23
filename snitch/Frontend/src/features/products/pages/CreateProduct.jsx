@@ -161,36 +161,18 @@ const CreateProduct = () => {
         />
       </div>
 
-      {/* ── Top Bar ── */}
-      <header className="sticky top-0 z-20 bg-[#0e0e15]/70 backdrop-blur-xl border-b border-[#4a4455]/15">
-        <div className="max-w-2xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-[#ccc3d8] hover:text-white transition-colors duration-150 text-sm font-medium"
-          >
-            <ArrowLeftIcon />
-            <span className="hidden sm:inline">Back</span>
-          </button>
-
-          <span
-            className="text-base font-extrabold tracking-[0.2em] uppercase"
-            style={{
-              background: 'linear-gradient(135deg, #d2bbff 0%, #7C3AED 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            SNITCH.
-          </span>
-
-          <div className="w-16" /> {/* spacer */}
-        </div>
-      </header>
-
       {/* ── Main ── */}
       <main className="relative z-10 w-full max-w-6xl mx-auto px-5 sm:px-8 py-4 flex flex-col h-auto lg:h-[calc(100vh-85px)] overflow-hidden">
+        
+        {/* Back Button */}
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="flex flex-row items-center gap-2 mb-2 w-max text-[#ccc3d8] hover:text-white transition-colors duration-150 text-sm font-medium"
+        >
+          <ArrowLeftIcon />
+          <span className="hidden sm:inline">Back</span>
+        </button>
 
         {/* Page heading */}
         <div className="mb-6 bg-[#7c3aed00] w-fit p-6 rounded-xl backdrop-blur-sm shrink-0">

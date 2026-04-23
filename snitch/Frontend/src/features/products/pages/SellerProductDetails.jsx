@@ -517,25 +517,7 @@ const SellerProductDetails = () => {
     return (
         <div className="min-h-screen bg-[#0e0e15] text-[#e4e1eb]">
 
-            {/* ── Navbar ── */}
-            <header className="sticky top-0 z-50 bg-[#0e0e15]/80 backdrop-blur-md border-b border-[#4a4455]/15">
-                <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-                    <Link to="/" className="text-xl font-bold tracking-tighter text-white hover:opacity-80 transition-opacity flex items-center gap-2">
-                        <div className="w-6 h-6 bg-[#7C3AED] rounded flex items-center justify-center">
-                            <span className="text-white text-xs leading-none">S</span>
-                        </div>
-                        SNITCH.
-                    </Link>
-                    <div className="flex items-center gap-5">
-                        <Link to="/seller/dashboard" className="text-xs font-bold uppercase tracking-widest text-[#d2bbff] hover:text-white transition-colors hidden sm:block">
-                            ← Dashboard
-                        </Link>
-                        <div className="w-8 h-8 rounded-full bg-[#1b1b22] border-2 border-[#1b1b22] overflow-hidden">
-                            <img src={`https://ui-avatars.com/api/?name=${user?.fullname || 'S'}&background=7c3aed&color=fff`} alt="Avatar" className="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                </div>
-            </header>
+
 
             {/* ── Main ── */}
             <main className="max-w-7xl mx-auto px-5 sm:px-8 py-8 lg:py-12">
