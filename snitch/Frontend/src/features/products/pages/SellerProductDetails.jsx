@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useProduct } from '../hook/useProduct';
 
 // Variant Card 
-const VariantCard = ({ variant, index, onStockChange, onDelete }) => {
+const VariantCard = ({ variant, index, onStockChange, onDelete, onEdit }) => {
     const image =
         variant.images?.[0]?.url ||
         'https://placehold.co/80x80/1b1b22/7c3aed?text=V';
@@ -73,7 +73,10 @@ const VariantCard = ({ variant, index, onStockChange, onDelete }) => {
 
             {/* Actions */}
             <div className="flex flex-col gap-1.5 shrink-0">
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg text-[#ccc3d8] hover:text-white hover:bg-[#4a4455]/30 transition-colors">
+                <button
+                    onClick={onEdit}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-[#ccc3d8] hover:text-white hover:bg-[#4a4455]/30 transition-colors"
+                >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 </button>
                 <button
@@ -157,7 +160,7 @@ const AddVariantForm = ({ onSave, onCancel }) => {
         const hasStandard = Object.values(standardAttributes).some(v => v.trim() !== '');
         const hasSizes = selectedSizes.length > 0;
         const hasCustom = customAttributes.some(a => a.key.trim() !== '');
-        
+
         if (!hasStandard && !hasSizes && !hasCustom) {
             setAttrError('Please provide at least one attribute (e.g., Size or Color)');
             return;
@@ -183,17 +186,17 @@ const AddVariantForm = ({ onSave, onCancel }) => {
 
         try {
             setIsSaving(true);
-            
+
             if (selectedSizes.length > 0) {
                 // Save it exactly as one variant with a comma separated string
                 attrMap.Size = selectedSizes.join(', ');
             }
-            
+
             await onSave({
                 ...basePayload,
                 attributes: attrMap
             });
-            
+
             onCancel(); // Close form upon success
         } catch (err) {
             setFormError(err?.response?.data?.message || 'Failed to save variant. Please try again.');
@@ -273,21 +276,20 @@ const AddVariantForm = ({ onSave, onCancel }) => {
                         <p className="text-[10px] font-bold text-[#ffb4ab] uppercase tracking-wide">{attrError}</p>
                     )}
                 </div>
-                
+
                 {/* Standard Clothing Presets */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="col-span-2">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-[#4a4455] block mb-2">Sizes (Select multiple to auto-generate variants)</label>
                         <div className="flex flex-wrap gap-2">
                             {PRESET_SIZES.map(s => (
-                                <button 
-                                    key={s} 
+                                <button
+                                    key={s}
                                     onClick={() => toggleSize(s)}
-                                    className={`h-9 px-4 rounded-lg text-xs font-bold tracking-wide transition-all ${
-                                        selectedSizes.includes(s)
-                                        ? 'bg-[#7c3aed] text-white shadow-[0_0_10px_rgba(124,58,237,0.3)]'
-                                        : 'bg-[#0e0e15] border border-[#4a4455]/50 text-[#ccc3d8] hover:border-[#7c3aed] hover:text-white'
-                                    }`}
+                                    className={`h-9 px-4 rounded-lg text-xs font-bold tracking-wide transition-all ${selectedSizes.includes(s)
+                                            ? 'bg-[#7c3aed] text-white shadow-[0_0_10px_rgba(124,58,237,0.3)]'
+                                            : 'bg-[#0e0e15] border border-[#4a4455]/50 text-[#ccc3d8] hover:border-[#7c3aed] hover:text-white'
+                                        }`}
                                 >
                                     {s}
                                 </button>
@@ -296,27 +298,27 @@ const AddVariantForm = ({ onSave, onCancel }) => {
                     </div>
                     <div>
                         <label className="text-[10px] font-bold uppercase tracking-widest text-[#4a4455] block mb-1">Color</label>
-                        <input 
+                        <input
                             value={standardAttributes.Color}
-                            onChange={(e) => { setStandardAttributes(p => ({...p, Color: e.target.value})); setAttrError(''); }}
+                            onChange={(e) => { setStandardAttributes(p => ({ ...p, Color: e.target.value })); setAttrError(''); }}
                             className={`${inputClass} placeholder-[#4a4455]/50`}
                             placeholder="e.g. Vintage Black"
                         />
                     </div>
                     <div>
                         <label className="text-[10px] font-bold uppercase tracking-widest text-[#4a4455] block mb-1">Material</label>
-                        <input 
+                        <input
                             value={standardAttributes.Material}
-                            onChange={(e) => { setStandardAttributes(p => ({...p, Material: e.target.value})); setAttrError(''); }}
+                            onChange={(e) => { setStandardAttributes(p => ({ ...p, Material: e.target.value })); setAttrError(''); }}
                             className={`${inputClass} placeholder-[#4a4455]/50`}
                             placeholder="e.g. 100% Cotton"
                         />
                     </div>
                     <div>
                         <label className="text-[10px] font-bold uppercase tracking-widest text-[#4a4455] block mb-1">Fit</label>
-                        <input 
+                        <input
                             value={standardAttributes.Fit}
-                            onChange={(e) => { setStandardAttributes(p => ({...p, Fit: e.target.value})); setAttrError(''); }}
+                            onChange={(e) => { setStandardAttributes(p => ({ ...p, Fit: e.target.value })); setAttrError(''); }}
                             className={`${inputClass} placeholder-[#4a4455]/50`}
                             placeholder="e.g. Oversized"
                         />
@@ -351,7 +353,7 @@ const AddVariantForm = ({ onSave, onCancel }) => {
                         ))}
                     </div>
                 )}
-                
+
                 <button
                     onClick={addCustomAttribute}
                     className="text-[10px] font-bold uppercase tracking-widest text-[#7c3aed] hover:text-[#d2bbff] transition-colors flex items-center gap-1"
@@ -433,17 +435,136 @@ const AddVariantForm = ({ onSave, onCancel }) => {
     );
 };
 
+// Edit Variant Modal
+const EditVariantModal = ({ variant, onSave, onCancel }) => {
+    const [price, setPrice] = useState({
+        amount: variant.price?.amount || '',
+        currency: variant.price?.currency || 'INR'
+    });
+    const [stock, setStock] = useState(variant.stock || 0);
+    const [attributes, setAttributes] = useState(
+        Object.entries(variant.attributes || {}).map(([key, value]) => ({ key, value }))
+    );
+    const [isSaving, setIsSaving] = useState(false);
+
+    const updateAttr = (index, field, value) => {
+        setAttributes(prev => prev.map((a, i) => i === index ? { ...a, [field]: value } : a));
+    };
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const attrObj = {};
+            attributes.forEach(a => { if (a.key) attrObj[a.key] = a.value; });
+
+            await onSave(variant._id, {
+                priceAmount: price.amount,
+                priceCurrency: price.currency,
+                stock: Number(stock),
+                attributes: attrObj
+            });
+            onCancel();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div className="bg-[#13131a] border border-[#1b1b22] rounded-3xl w-full max-w-md p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+                <h3 className="text-xl font-bold text-white mb-6">Edit Variant</h3>
+
+                <div className="space-y-4 mb-6">
+                    <div>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-[#958da1] block mb-2">Price</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="number"
+                                value={price.amount}
+                                onChange={e => setPrice(p => ({ ...p, amount: e.target.value }))}
+                                className="bg-[#0e0e15] border border-[#4a4455]/30 rounded-xl px-3 py-2.5 text-sm text-white w-full focus:border-[#7c3aed] transition-all"
+                            />
+                            <select
+                                value={price.currency}
+                                onChange={e => setPrice(p => ({ ...p, currency: e.target.value }))}
+                                className="bg-[#0e0e15] border border-[#4a4455]/30 rounded-xl px-3 py-2.5 text-sm text-white focus:border-[#7c3aed]"
+                            >
+                                {CURRENCIES.map(c => <option key={c}>{c}</option>)}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-[#958da1] block mb-2">Stock</label>
+                        <input
+                            type="number"
+                            value={stock}
+                            onChange={e => setStock(e.target.value)}
+                            className="bg-[#0e0e15] border border-[#4a4455]/30 rounded-xl px-3 py-2.5 text-sm text-white w-full focus:border-[#7c3aed]"
+                        />
+                    </div>
+                </div>
+
+                <div className="mb-8">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#958da1] block mb-3">Attributes</label>
+                    <div className="space-y-2">
+                        {attributes.map((attr, i) => (
+                            <div key={i} className="flex gap-2">
+                                <input
+                                    value={attr.key}
+                                    readOnly={['Color', 'Size', 'Material', 'Fit'].includes(attr.key)}
+                                    onChange={e => updateAttr(i, 'key', e.target.value)}
+                                    className="bg-[#0e0e15] border border-[#4a4455]/30 rounded-lg px-3 py-1.5 text-[10px] text-[#958da1] w-1/3 uppercase font-bold tracking-widest"
+                                />
+                                <input
+                                    value={attr.value}
+                                    onChange={e => updateAttr(i, 'value', e.target.value)}
+                                    className="bg-[#0e0e15] border border-[#4a4455]/30 rounded-lg px-3 py-1.5 text-xs text-white flex-1"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex gap-3">
+                    <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="flex-1 h-11 rounded-xl text-sm font-bold uppercase tracking-widest text-white transition-all disabled:opacity-50"
+                        style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #523787 100%)' }}
+                    >
+                        {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button
+                        onClick={onCancel}
+                        disabled={isSaving}
+                        className="flex-1 h-11 rounded-xl text-sm font-bold uppercase tracking-widest text-[#ccc3d8] border border-[#4a4455]/30 hover:bg-[#1b1b22]"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
 //  Main Page
 const SellerProductDetails = () => {
     const { productId } = useParams();
     const user = useSelector(state => state.auth.user);
-    const { handleGetProductDetails, handleAddProductVariant } = useProduct();
+    const { handleGetProductDetails, handleAddProductVariant, handleUpdateProductVariant, handleDeleteProductVariant } = useProduct();
 
     const [product, setProduct] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [variants, setVariants] = useState([]);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [editingVariant, setEditingVariant] = useState(null);
+    const [isEditingProduct, setIsEditingProduct] = useState(false);
+    const [editedProduct, setEditedProduct] = useState({ title: '', description: '' });
     const thumbnailRef = useRef(null);
 
     useEffect(() => {
@@ -454,6 +575,7 @@ const SellerProductDetails = () => {
                 const p = data?.product || data;
                 setProduct(p);
                 setVariants(p?.variants || []);
+                setEditedProduct({ title: p?.title, description: p?.description });
             } catch (err) {
                 console.error(err);
             } finally {
@@ -464,14 +586,38 @@ const SellerProductDetails = () => {
 
 
 
-    const handleStockChange = (idx, delta) => {
-        setVariants(prev =>
-            prev.map((v, i) => i === idx ? { ...v, stock: Math.max(0, (v.stock ?? 0) + delta) } : v)
-        );
+    const handleStockChange = async (idx, delta) => {
+        const variant = variants[idx];
+        if (!variant?._id) return;
+
+        try {
+            // Optimistic Update
+            setVariants(prev =>
+                prev.map((v, i) => i === idx ? { ...v, stock: Math.max(0, (v.stock ?? 0) + delta) } : v)
+            );
+
+            await handleUpdateProductVariant(productId, variant._id, { stockDelta: delta });
+        } catch (err) {
+            console.error("Stock update failed", err);
+            // Revert on error
+            const data = await handleGetProductDetails(productId);
+            setVariants(data?.variants || []);
+        }
     };
 
-    const handleDeleteVariant = (idx) =>
-        setVariants(prev => prev.filter((_, i) => i !== idx));
+    const handleDeleteVariant = async (idx) => {
+        const variant = variants[idx];
+        if (!variant?._id) return;
+
+        if (!window.confirm("Are you sure you want to delete this variant?")) return;
+
+        try {
+            await handleDeleteProductVariant(productId, variant._id);
+            setVariants(prev => prev.filter((_, i) => i !== idx));
+        } catch (err) {
+            console.error("Delete variant failed", err);
+        }
+    };
 
     // Returns a promise so AddVariantForm's async handleSubmit can await it
     const handleSaveVariant = async (variantPayload) => {
@@ -486,6 +632,25 @@ const SellerProductDetails = () => {
             setVariants(updatedVariants);
         } else {
             setVariants(prev => [...prev, variantPayload]);
+        }
+    };
+
+    const handleUpdateVariant = async (variantId, updateData) => {
+        try {
+            const result = await handleUpdateProductVariant(productId, variantId, updateData);
+            setVariants(result?.product?.variants || result?.variants || []);
+        } catch (err) {
+            console.error("Update variant failed", err);
+        }
+    };
+
+    const handleUpdateProductInfo = async () => {
+        try {
+            const result = await handleUpdateProduct(productId, editedProduct);
+            setProduct(result.product);
+            setIsEditingProduct(false);
+        } catch (err) {
+            console.error("Update product failed", err);
         }
     };
 
@@ -561,16 +726,49 @@ const SellerProductDetails = () => {
 
                         {/* Compact Product Info */}
                         <div className="bg-[#13131a] rounded-2xl p-4">
-                            <div className="flex items-start justify-between gap-3 mb-2">
-                                <h1 className="text-lg font-bold tracking-tight text-white leading-tight">{product.title}</h1>
-                                <span className="text-sm font-semibold text-[#d2bbff] shrink-0">
-                                    {product.price?.amount?.toLocaleString('en-US') || 0}
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-[#958da1] ml-1">
-                                        {product.price?.currency || 'INR'}
-                                    </span>
-                                </span>
-                            </div>
-                            <p className="text-xs text-[#ccc3d8] leading-relaxed mb-3">{product.description}</p>
+                            {isEditingProduct ? (
+                                <div className="space-y-3">
+                                    <input
+                                        value={editedProduct.title}
+                                        onChange={e => setEditedProduct(p => ({ ...p, title: e.target.value }))}
+                                        className="w-full bg-[#0e0e15] border border-[#7c3aed]/50 rounded-xl px-3 py-2 text-sm text-white focus:outline-none"
+                                        placeholder="Product Title"
+                                    />
+                                    <textarea
+                                        value={editedProduct.description}
+                                        onChange={e => setEditedProduct(p => ({ ...p, description: e.target.value }))}
+                                        className="w-full bg-[#0e0e15] border border-[#4a4455]/30 rounded-xl px-3 py-2 text-xs text-[#ccc3d8] h-20 focus:border-[#7c3aed] transition-all resize-none"
+                                        placeholder="Product Description"
+                                    />
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={handleUpdateProductInfo}
+                                            className="px-4 py-1.5 rounded-lg bg-[#7c3aed] text-white text-[10px] font-bold uppercase tracking-widest"
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            onClick={() => setIsEditingProduct(false)}
+                                            className="px-4 py-1.5 rounded-lg border border-[#4a4455]/30 text-[#958da1] text-[10px] font-bold uppercase tracking-widest"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex items-start justify-between gap-3 mb-2">
+                                        <h1 className="text-lg font-bold tracking-tight text-white leading-tight">{product.title}</h1>
+                                        <button
+                                            onClick={() => setIsEditingProduct(true)}
+                                            className="p-1.5 rounded-lg hover:bg-[#4a4455]/30 text-[#958da1] hover:text-[#d2bbff] transition-all"
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-[#ccc3d8] leading-relaxed mb-3">{product.description}</p>
+                                </>
+                            )}
                             <div className="flex gap-4">
                                 <div>
                                     <span className="block text-[9px] font-bold uppercase tracking-widest text-[#958da1]">Listed</span>
@@ -621,6 +819,15 @@ const SellerProductDetails = () => {
                             />
                         )}
 
+                        {/* Edit Variant Modal */}
+                        {editingVariant && (
+                            <EditVariantModal
+                                variant={editingVariant}
+                                onSave={handleUpdateVariant}
+                                onCancel={() => setEditingVariant(null)}
+                            />
+                        )}
+
                         {/* Empty State */}
                         {variants.length === 0 && !showAddForm && (
                             <div className="flex flex-col items-center justify-center py-16 text-center bg-[#13131a] rounded-2xl">
@@ -646,11 +853,12 @@ const SellerProductDetails = () => {
                             <div className="space-y-3">
                                 {variants.map((variant, idx) => (
                                     <VariantCard
-                                        key={idx}
+                                        key={variant._id || idx}
                                         variant={variant}
                                         index={idx}
                                         onStockChange={handleStockChange}
                                         onDelete={handleDeleteVariant}
+                                        onEdit={() => setEditingVariant(variant)}
                                     />
                                 ))}
                             </div>

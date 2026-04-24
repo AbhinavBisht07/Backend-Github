@@ -3,6 +3,18 @@ import { useSelector } from 'react-redux';
 import { useCart } from '../hook/useCart';
 import { Link } from 'react-router-dom';
 
+// Helper to map currency codes to symbols
+const getCurrencySymbol = (currencyCode) => {
+    const symbols = {
+        'INR': '₹',
+        'USD': '$',
+        'JPY': '¥',
+        'EUR': '€',
+        'GBP': '£'
+    };
+    return symbols[currencyCode] || currencyCode;
+};
+
 const Cart = () => {
     const cartItems = useSelector(state => state.cart.items) || [];
     const { handleGetCart, handleIncrementCartItem, handleDecrementCartItem, handleRemoveCartItem } = useCart();
@@ -11,8 +23,18 @@ const Cart = () => {
         handleGetCart();
     }, []);
 
+    /**
+     * Logic: We always calculate the subtotal using the LIVE price found in the product listing,
+     * ensuring the user's bag stays synchronized with seller updates.
+     */
     const calculateSubtotal = () => {
-        return cartItems.reduce((total, item) => total + (item.price.amount * item.quantity), 0);
+        return cartItems.reduce((total, item) => {
+            // Find the specific variant's current data
+            const variant = item.product.variants?.find(v => v._id === item.variant);
+            // Variant price takes priority; falls back to main product price
+            const realPrice = variant?.price?.amount ? variant.price : item.product.price;
+            return total + (realPrice.amount * item.quantity);
+        }, 0);
     };
 
     const subtotal = calculateSubtotal();
@@ -83,6 +105,22 @@ const Cart = () => {
                                     attrString = components.length > 0 ? components.join(' | ') : "Standard Option";                                    
                                 }
 
+                                /** 
+                                 * PRICE SYNCHRONIZATION LOGIC
+                                 * We compare the price stored when the item was first "added to bag" (item.price)
+                                 * with the current price in the product's listing database (realPrice).
+                                 */
+                                const variant = item.product.variants?.find(v => v._id === item.variant);
+                                const realPrice = variant?.price?.amount ? variant.price : item.product.price;
+                                
+                                const hasPriceChanged = realPrice.amount !== item.price.amount;
+                                const diff = Math.abs(realPrice.amount - item.price.amount);
+                                const isIncreased = realPrice.amount > item.price.amount;
+                                
+                                // Currency symbols
+                                const symbol = getCurrencySymbol(realPrice.currency);
+                                const oldSymbol = getCurrencySymbol(item.price.currency);
+
                                 return (
                                     <div key={item._id} className="group relative flex gap-5 p-4 sm:p-5 rounded-3xl bg-[#13131a] transition-all hover:bg-[#1b1b22]">
                                         <div className="w-24 sm:w-32 aspect-[3/4] shrink-0 rounded-2xl overflow-hidden bg-[#0e0e15]">
@@ -98,10 +136,33 @@ const Cart = () => {
                                                 <Link to={`/product/${item.product._id}`} className="text-base sm:text-lg font-bold text-white hover:text-[#d2bbff] transition-colors leading-tight line-clamp-2">
                                                     {item.product.title}
                                                 </Link>
-                                                <span className="text-base font-bold text-white shrink-0">
-                                                    {item.price.currency === 'INR' ? '₹' : '$'}{(item.price.amount).toLocaleString()}
-                                                </span>
+                                                
+                                                <div className="flex flex-col items-end shrink-0">
+                                                    {hasPriceChanged ? (
+                                                        <>
+                                                            <span className="text-[10px] font-bold text-[#958da1] line-through uppercase tracking-widest opacity-50">
+                                                                {oldSymbol}{item.price.amount.toLocaleString()}
+                                                            </span>
+                                                            <span className="text-base font-bold text-white">
+                                                                {symbol}{realPrice.amount.toLocaleString()}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-base font-bold text-white">
+                                                            {symbol}{item.price.amount.toLocaleString()}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
+
+                                            {hasPriceChanged && (
+                                                <p className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${isIncreased ? 'text-[#ffb4ab]' : 'text-[#b4f1be]'}`}>
+                                                    {isIncreased 
+                                                        ? `Price Update: This item has increased by ${symbol}${diff.toLocaleString()}. Current price: ${symbol}${realPrice.amount.toLocaleString()}`
+                                                        : `Price Drop: You save ${symbol}${diff.toLocaleString()}! This item is now ${symbol}${realPrice.amount.toLocaleString()}`
+                                                    }
+                                                </p>
+                                            )}
                                             
                                             <p className="text-xs font-semibold text-[#958da1] tracking-wide mb-auto">
                                                 {attrString}
@@ -185,23 +246,23 @@ const Cart = () => {
                                 <div className="space-y-4 text-sm mb-6">
                                     <div className="flex items-center justify-between text-[#ccc3d8]">
                                         <span>Subtotal</span>
-                                        <span>₹{subtotal.toLocaleString()}</span>
+                                        <span>{getCurrencySymbol(cartItems[0]?.price?.currency)} {subtotal.toLocaleString()}</span>
                                     </div>
                                     <div className="flex items-center justify-between text-[#ccc3d8]">
                                         <span>Estimated GST (5%)</span>
-                                        <span>₹{Math.round(estimatedGST).toLocaleString()}</span>
+                                        <span>{getCurrencySymbol(cartItems[0]?.price?.currency)} {Math.round(estimatedGST).toLocaleString()}</span>
                                     </div>
                                     <div className="flex items-center justify-between text-[#ccc3d8]">
                                         <span>Shipping</span>
-                                        <span>{isFreeShipping ? <span className="text-[#a1ffb4]">Free</span> : `₹${shippingFee}`}</span>
+                                        <span>{isFreeShipping ? <span className="text-[#b4f1be]">Free</span> : `${getCurrencySymbol(cartItems[0]?.price?.currency)} ${shippingFee}`}</span>
                                     </div>
                                 </div>
                                 
                                 <div className="h-[1px] w-full bg-[#1b1b22] mb-6"></div>
                                 
-                                <div className="flex items-center justify-between mb-8">
-                                    <span className="text-base font-bold text-white">Total</span>
-                                    <span className="text-2xl font-bold text-white">₹{Math.round(total).toLocaleString()}</span>
+                                <div className="flex items-center justify-between text-white font-bold text-base mb-8">
+                                    <span>Total</span>
+                                    <span>{getCurrencySymbol(cartItems[0]?.price?.currency)} {Math.round(total).toLocaleString()}</span>
                                 </div>
                                 
                                 <button 

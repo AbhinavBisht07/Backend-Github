@@ -137,4 +137,74 @@ export async function addProductVariant(req, res) {
         success: true,
         product
     });
+}
+
+
+export async function updateProduct(req, res) {
+    const { productId } = req.params;
+    const { title, description, priceAmount, priceCurrency } = req.body;
+
+    const product = await productModel.findOneAndUpdate(
+        { _id: productId, seller: req.user._id },
+        { 
+            $set: { 
+                title, 
+                description,
+                "price.amount": priceAmount,
+                "price.currency": priceCurrency
+            } 
+        },
+        { new: true }
+    );
+
+    if (!product) {
+        return res.status(404).json({ message: "Product not found", success: false });
+    }
+
+    res.status(200).json({ message: "Product updated successfully", success: true, product });
+}
+
+
+export async function updateProductVariant(req, res) {
+    const { productId, variantId } = req.params;
+    const { priceAmount, priceCurrency, stock, stockDelta, attributes } = req.body;
+
+    const updateFields = {};
+    if (priceAmount !== undefined) updateFields["variants.$.price.amount"] = Number(priceAmount);
+    if (priceCurrency !== undefined) updateFields["variants.$.price.currency"] = priceCurrency;
+    if (stock !== undefined) updateFields["variants.$.stock"] = Number(stock);
+    if (attributes !== undefined) updateFields["variants.$.attributes"] = attributes;
+
+    const updateQuery = {};
+    if (Object.keys(updateFields).length > 0) updateQuery.$set = updateFields;
+    if (stockDelta !== undefined) updateQuery.$inc = { "variants.$.stock": Number(stockDelta) };
+
+    const product = await productModel.findOneAndUpdate(
+        { _id: productId, seller: req.user._id, "variants._id": variantId },
+        updateQuery,
+        { new: true }
+    );
+
+    if (!product) {
+        return res.status(404).json({ message: "Product or variant not found", success: false });
+    }
+
+    res.status(200).json({ message: "Variant updated successfully", success: true, product });
+}
+
+
+export async function deleteProductVariant(req, res) {
+    const { productId, variantId } = req.params;
+
+    const product = await productModel.findOneAndUpdate(
+        { _id: productId, seller: req.user._id },
+        { $pull: { variants: { _id: variantId } } },
+        { new: true }
+    );
+
+    if (!product) {
+        return res.status(404).json({ message: "Product not found", success: false });
+    }
+
+    res.status(200).json({ message: "Variant deleted successfully", success: true, product });
 }
