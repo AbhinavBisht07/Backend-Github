@@ -8,6 +8,8 @@ import Home from "../features/products/pages/Home";
 import ProductDetails from "../features/products/pages/ProductDetails";
 import SellerProductDetails from "../features/products/pages/SellerProductDetails";
 import Cart from "../features/cart/pages/Cart";
+import OrderSuccess from "../features/cart/pages/OrderSuccess";
+import OrderFailed from "../features/cart/pages/OrderFailed";
 
 import AppLayout from "./AppLayout";
 
@@ -39,6 +41,14 @@ export const routes = createBrowserRouter([
                     <Protected>
                         <Cart />
                     </Protected>
+            },
+            {
+                path: "/order-success",
+                element: <OrderSuccess />
+            },
+            {
+                path: "/order-failed",
+                element: <OrderFailed />
             },
             {
                 path: "/seller",

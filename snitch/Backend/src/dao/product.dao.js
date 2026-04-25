@@ -10,3 +10,5 @@ export const stockOfVariant = async (productId, variantId) => {
 
     return stock;
 };
+
+
