@@ -1,27 +1,30 @@
 .feed-page {
     display: flex;
+    margin-top: 5rem;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 1rem;
 
     .feed {
-        max-width: 300px;
+        max-width: 350px;
         width: 100%;
 
         .posts {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 1.5rem;
 
             .post {
-                padding: 0.5rem 0.5rem;
+                padding: 1rem 1rem;
                 width: 100%;
                 display: flex;
                 flex-direction: column;
                 gap: 0.5rem;
-                background-color: rgb(47, 47, 47);
+                border-radius: 5px;
+                background-color: rgba(47, 47, 47, 0.484);
+                backdrop-filter: blur;
 
                 .user {
                     display: flex;
@@ -79,6 +82,7 @@
 
                 img {
                     width: 100%;
+                    // height: 100%;
                 }
             }
         }

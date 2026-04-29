@@ -28,7 +28,9 @@ const CreatePost = () => {
     return (
         <main className='create-post-page'>
             <div className="form-container">
+
                 <h1>Create Post</h1>
+
                 <form onSubmit={handleSubmit}>
                     <label className='post-image-label' htmlFor="postImage">Select image</label>
                     <input
@@ -49,6 +51,10 @@ const CreatePost = () => {
 
                     <button className='button primary-button'>Create Post</button>
                 </form>
+
+                <button
+                onClick={()=>{navigate("/")}} 
+                className='closeBtn button primary-button'>Close</button>
             </div>
         </main>
     )

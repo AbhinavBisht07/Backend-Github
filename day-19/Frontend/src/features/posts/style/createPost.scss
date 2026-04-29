@@ -1,18 +1,39 @@
-.post-image-label{
-    background-color: rgb(227, 227, 227);
-    color: rgba(30, 30, 30, 0.766);
-    width: fit-content;
-    padding: .5rem 1rem;
-    border-radius: 0.4rem;
-    font-size: 14px;
-    font-weight: 600;
+.form-container{
+    position: relative;
+    background-color: rgba(47, 47, 47, 0.484);
+    padding: 2rem;
+    border-radius: 0.5rem;
 
-    cursor: pointer;
-    transition: 0.3s all cubic-bezier(0.19, 1, 0.22, 1);
-}
-.post-image-label:hover{
-    transform: translateY(-5%);
-}
-.post-image-label:active{
-    transform: scale(0.98);
+    form{
+        .post-image-label{
+            background-color: rgb(227, 227, 227);
+            color: rgba(30, 30, 30, 0.766);
+            width: fit-content;
+            padding: .5rem 1rem;
+            border-radius: 0.4rem;
+            font-size: 14px;
+            font-weight: 600;
+        
+            cursor: pointer;
+            transition: 0.3s all cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .post-image-label:hover{
+            transform: translateY(-5%);
+        }
+        .post-image-label:active{
+            transform: scale(0.98);
+        }
+        
+        input{
+            background-color: rgb(227, 227, 227);
+            color: black;
+        }
+    }
+
+    .closeBtn{
+        width: fit-content;
+        position: absolute;
+        top: 5%;
+        right: 5%;
+    }
 }

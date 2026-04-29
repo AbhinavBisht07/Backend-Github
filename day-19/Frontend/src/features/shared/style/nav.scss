@@ -1,6 +1,18 @@
 .navbar{
+    position: fixed;
+    top: 0;
+
+    background-color: rgba(0, 0, 0, 0.078);
+    backdrop-filter: blur(10px);
     width: 100%;
     display: flex;
     justify-content: space-between;
     padding: 1rem 1rem;
+
+    color: black;
+
+    div{
+        display: flex;
+        gap: 0.5rem;
+    }
 }
