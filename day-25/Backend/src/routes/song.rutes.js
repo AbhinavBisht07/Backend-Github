@@ -12,8 +12,15 @@ const router = Router();
 router.post("/", upload.single("song"), songController.uploadSong)
 
 /**
- * @route 
+ * @route GET /api/songs
+ * @description Fetch song based on mood ... Mood will be given in query :- /api/songs?mood=sad
  */
 router.get("/", songController.getSong)
+
+/**
+ * @route GET /api/songs/
+ * @description Fetch all songs
+ */
+router.get("/all-songs", songController.getAllSongs)
 
 module.exports = router;

@@ -63,8 +63,19 @@ async function getSong(req,res){
     })
 } 
 
+async function getAllSongs(req,res){
+    const songs = await songModel.find();
+    console.log(songs);
+
+    res.status(200).json({
+        message: "Songs Fetched successfully",
+        songs
+    })
+}
+
 
 module.exports = {
     uploadSong,
-    getSong
+    getSong,
+    getAllSongs
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { detectFace, init } from "../utils/utils";
 
-const FaceExpression = () => {
+const FaceExpression = ({ onClick = ()=>{} }) => {
     const videoRef = useRef(null);
     const faceLandmarkerRef = useRef(null);
     const animationRef = useRef(null);
@@ -25,6 +25,11 @@ const FaceExpression = () => {
         };
     }, []);
 
+    async function handleClick(){
+        const expression = detectFace({faceLandmarkerRef, videoRef, setExpression});
+        onClick(expression)
+    }
+
     return (
         <div style={{ textAlign: "center" }}>
             <h2>Emotion Detection</h2>
@@ -43,9 +48,7 @@ const FaceExpression = () => {
             <h2 style={{ marginTop: "15px" }}>{expression}</h2>
 
             <button 
-            onClick={()=>{
-                detectFace({faceLandmarkerRef, videoRef, setExpression});
-            }}
+            onClick={handleClick}
             >Detect Expression</button>
         </div>
     );

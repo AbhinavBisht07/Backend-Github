@@ -26,7 +26,9 @@ export const detectFace = ({faceLandmarkerRef, videoRef, setExpression}) => {
         const landmarks = results.faceLandmarks[0];
 
         setExpression(getExpression(shapes, landmarks));
+        return getExpression(shapes, landmarks)
     }
+
 
     // animationRef.current = requestAnimationFrame(detectFace);
 };
@@ -94,12 +96,20 @@ export const getExpression = (blendshapes, landmarks) => {
     const leftEAR = getEAR(landmarks, leftEyeIdx);
     const rightEAR = getEAR(landmarks, rightEyeIdx);
 
-    if (leftEAR < 0.20 && rightEAR < 0.20) return "😉 Blink";
-    if (smile > 1.0 && jawOpen < 0.3) return "😊 Happy";
-    if (smile > 0.1 && jawOpen > 0.001) return "🤩 Excited";
-    if (jawOpen > 0.2 && eyeWide > 0.2) return "😮 Surprised";
-    if (browDown > 0.1 && eyeSquint > 0.2) return "😠 Angry";
-    if (mouthFrown > 0.1 && browInnerUp > 0.1) return "😢 Sad";
+    // if (leftEAR < 0.20 && rightEAR < 0.20) return "😉 Blink";
+    if (smile > 1.0 && jawOpen < 0.3) return "happy";
+    if (smile > 0.1 && jawOpen > 0.001) return "excited";
+    if (jawOpen > 0.2 && eyeWide > 0.2) return "surprised";
+    if (browDown > 0.1 && eyeSquint > 0.2) return "angry";
+    if (mouthFrown > 0.1 && browInnerUp > 0.1) return "sad";
+    return "neutral";
 
-    return "😐 Neutral";
+    // if (leftEAR < 0.20 && rightEAR < 0.20) return "😉 Blink";
+    // if (smile > 1.0 && jawOpen < 0.3) return "😊 Happy";
+    // if (smile > 0.1 && jawOpen > 0.001) return "🤩 Excited";
+    // if (jawOpen > 0.2 && eyeWide > 0.2) return "😮 Surprised";
+    // if (browDown > 0.1 && eyeSquint > 0.2) return "😠 Angry";
+    // if (mouthFrown > 0.1 && browInnerUp > 0.1) return "😢 Sad";
+    // return "😐 Neutral";
+
 };
