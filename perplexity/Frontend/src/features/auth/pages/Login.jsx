@@ -61,10 +61,7 @@ const Login = () => {
                                 id="email"
                                 type="email"
                                 value={email}
-                                onChange={(event) => {
-                                    setEmail(event.target.value)
-                                    dispatch(setError(null))
-                                }}
+                                onChange={(event) => setEmail(event.target.value)}
                                 placeholder="you@example.com"
                                 required
                                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
