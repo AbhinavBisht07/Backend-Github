@@ -12,7 +12,8 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verify = async () => {
       try {
-        await axios.get(`http://localhost:3000/api/auth/verify-email?token=${token}`);
+        // await axios.get(`http://localhost:3000/api/auth/verify-email?token=${token}`);
+        await axios.get(`https://perplexity-clone-9lkm.onrender.com/api/auth/verify-email?token=${token}`);
         setStatus("verified");
       } catch (err) {
         setStatus("error");

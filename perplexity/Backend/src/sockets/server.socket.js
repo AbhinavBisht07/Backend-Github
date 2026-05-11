@@ -5,8 +5,12 @@ let io;
 
 export function initSocket(httpServer){
     io = new Server(httpServer, {
+        // cors: {
+        //     origin: "http://localhost:5173",
+        //     credentials: true
+        // }
         cors: {
-            origin: "http://localhost:5173",
+            origin: "https://perplexity-clone-9lkm.onrender.com",
             credentials: true
         }
     })

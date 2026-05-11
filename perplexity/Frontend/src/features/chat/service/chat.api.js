@@ -1,8 +1,12 @@
 import axios from "axios"
 
 
+// const api = axios.create({
+//     baseURL: "http://localhost:3000",
+//     withCredentials: true
+// })
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: "https://perplexity-clone-9lkm.onrender.com",
     withCredentials: true
 })
 
@@ -10,7 +14,9 @@ const api = axios.create({
 export const sendMessage = async ({message, chatId})=>{
     // const response  = await api.post("/api/chats/message", {message, chat: chatId});
     // return response.data;
-    const response  = await fetch("http://localhost:3000/api/chats/message", {
+
+    // const response  = await fetch("http://localhost:3000/api/chats/message", {
+    const response  = await fetch("https://perplexity-clone-9lkm.onrender.com/api/chats/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", //equivalent to axios's withCredentials: true
