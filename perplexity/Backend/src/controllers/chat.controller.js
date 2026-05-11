@@ -45,24 +45,30 @@ export async function sendMessage(req,res){
     // Stream tokens to frontend & collect full response simultaneously
     let fullResponse = "";
 
-    const stream = generateResponse(messages);
+    try {
+        const stream = generateResponse(messages);
 
-    for await(const token of stream){
-        fullResponse += token; // keep building full response for DB storage
-        res.write(`event: token\ndata: ${JSON.stringify({token})}\n\n`); // send token to frontend
+        for await (const token of stream) {
+            fullResponse += token; // keep building full response for DB storage
+            res.write(`event: token\ndata: ${JSON.stringify({ token })}\n\n`); // send token to frontend
+        }
+
+        // Store complete AI response in DB(only after streaming is done)
+        const aiMessage = await messageModel.create({
+            chat: chatId || chat._id,
+            content: fullResponse,
+            role: "ai"
+        })
+
+        // Send Final event sofrontend knows streaming is complete 
+        res.write(`event: done\ndata: ${JSON.stringify({ aiMessage })}\n\n`);
+        res.end();
+    } catch (err) {
+        console.error("BACKEND AI ERROR:", err);
+        // Send error event to frontend so it doesn't stay stuck
+        res.write(`event: error\ndata: ${JSON.stringify({ message: err.message || "AI failed to respond. Likely token limit or API error." })}\n\n`);
+        res.end();
     }
-    
-    // const result = await generateResponse(messages);
-    // Store complete AI response in DB(only after streaming is done)
-    const aiMessage = await messageModel.create({
-        chat: chatId || chat._id,
-        content: fullResponse,
-        role: "ai"
-    })
-
-    // Send Final event sofrontend knows streaming is complete 
-    res.write(`event: done\ndata: ${JSON.stringify({aiMessage})}\n\n`);
-    res.end();
     
     // storing aiMessage in database :-
 

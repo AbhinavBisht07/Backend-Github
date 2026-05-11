@@ -43,6 +43,12 @@ export const useChat = () => {
                     const eventType = lines[0].replace("event: ", "");
                     const data = JSON.parse(lines[1].replace("data: ", ""))
 
+                    if (eventType === "error") {
+                        dispatch(setError(data.message));
+                        dispatch(setLoading(false));
+                        return;
+                    }
+
                     if (eventType === "metadata") {
                         currentChatId = data.chat._id;
                         if (!chatId) {
