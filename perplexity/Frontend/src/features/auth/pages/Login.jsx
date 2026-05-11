@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setError } from '../auth.slice'
 import { Navigate } from 'react-router'
 import { Eye, EyeOff } from "lucide-react";
 
@@ -13,10 +14,12 @@ const Login = () => {
 
     const user = useSelector(state => state.auth.user)
     const loading = useSelector(state => state.auth.loading)
+    const error = useSelector(state => state.auth.error)
 
     const { handleLogin } = useAuth();
 
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const submitForm = async (event) => {
         event.preventDefault();
@@ -58,7 +61,10 @@ const Login = () => {
                                 id="email"
                                 type="email"
                                 value={email}
-                                onChange={(event) => setEmail(event.target.value)}
+                                onChange={(event) => {
+                                    setEmail(event.target.value)
+                                    dispatch(setError(null))
+                                }}
                                 placeholder="you@example.com"
                                 required
                                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950/80 px-4 py-3 text-zinc-100 outline-none ring-0 transition focus:border-[#31b8c6] focus:shadow-[0_0_0_3px_rgba(49,184,198,0.25)]"
@@ -93,6 +99,12 @@ const Login = () => {
                                 )}
                             </div>
                         </div>
+
+                        {error && (
+                            <p className="text-sm font-medium text-red-500 animate-pulse">
+                                {error}
+                            </p>
+                        )}
 
                         <button
                             type="submit"
