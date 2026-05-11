@@ -10,9 +10,8 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 const geminiModel = new ChatGoogleGenerativeAI({
     // model: "gemini-2.5-flash-lite",
     // model: "gemini-2.0-flash",
-    model: "gemini-1.5-flash",
     // model: "gemini-flash-latest",
-    // model: "gemini-2.5-flash",
+    model: "gemini-2.5-flash",
     apiKey: process.env.GEMINI_API_KEY
 });
 
