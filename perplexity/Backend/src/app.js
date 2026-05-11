@@ -18,10 +18,14 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser());
 app.use(morgan("dev"));
+// app.use(cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE"]
+// }))
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: true,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"]
 }))
 
 
@@ -29,9 +33,9 @@ const publicPath = path.join(__dirname, "..", "public");
 app.use(express.static(publicPath))
 
 // health check :- browser mein jaake likho localhost:3000 
-app.get("/", (req,res) =>{
-    res.json({message: "Server is running"});
-})
+// app.get("/", (req,res) =>{
+//     res.json({message: "Server is running"});
+// })
 
 
 // importing routes

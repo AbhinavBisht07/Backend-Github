@@ -4,6 +4,10 @@ const api = axios.create({
     baseURL: "http://localhost:3000",
     withCredentials: true,
 })
+// const api = axios.create({
+//     baseURL: "/",
+//     withCredentials: true,
+// })
 
 
 export async function register({email, username, password}){

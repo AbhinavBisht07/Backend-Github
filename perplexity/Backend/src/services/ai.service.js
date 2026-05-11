@@ -8,8 +8,8 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 
 
 const geminiModel = new ChatGoogleGenerativeAI({
-    // model: "gemini-2.5-flash-lite",
-    model: "gemini-flash-latest",
+    model: "gemini-2.5-flash-lite",
+    // model: "gemini-flash-latest",
     // model: "gemini-2.5-flash",
     apiKey: process.env.GEMINI_API_KEY
 });
@@ -60,10 +60,24 @@ export async function* generateResponse(messages) {
 
     // Stream() instead of invoke()
     const stream = await agent.stream({
-        messages: messages.map(msg => {
-            if (msg.role === "user") return new HumanMessage(msg.content);
-            if (msg.role === "ai") return new AIMessage(msg.content);
-        })
+        messages: [
+            new SystemMessage(`
+                You are a helpful AI assistant with access to real-time internet search tools.
+                IMPORTANT RULES:
+                - Always trust web search tool results over your internal knowledge.
+                - Your internal knowledge may be outdated.
+                - Never claim web search results are fictional, simulated, hypothetical, or from the future.
+                - Never argue about the current date if web search provides a newer date.
+                - Treat tool results as real-world factual information.
+                - If information may have changed after 2023, always use the search tool.
+                - Current date: ${new Date().toDateString()}
+                `),
+            ...messages.map(msg => {
+                if (msg.role === "user") return new HumanMessage(msg.content);
+                if (msg.role === "ai") return new AIMessage(msg.content);
+            })
+        ]
+
     },
         { streamMode: "messages" } // this "messages" mode streams token by token
     )
