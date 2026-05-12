@@ -7,16 +7,21 @@ import { webSearch } from "./webSearch.service.js";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 
 
-const geminiModel = new ChatGoogleGenerativeAI({
-    // model: "gemini-2.5-flash-lite",
-    // model: "gemini-2.0-flash",
-    // model: "gemini-flash-latest",
-    model: "gemini-2.5-flash",
-    apiKey: process.env.GEMINI_API_KEY
-});
+// const geminiModel = new ChatGoogleGenerativeAI({
+//     // model: "gemini-2.5-flash-lite",
+//     // model: "gemini-2.0-flash",
+//     // model: "gemini-flash-latest",
+//     model: "gemini-2.5-flash",
+//     apiKey: process.env.GEMINI_API_KEY
+// });
 
 const mistralModel = new ChatMistralAI({
     model: "mistral-small-latest",
+    apiKey: process.env.MISTRAL_API_KEY
+});
+
+const mistralAnswerModel = new ChatMistralAI({
+    model: "mistral-large-latest",
     apiKey: process.env.MISTRAL_API_KEY
 });
 
@@ -32,8 +37,13 @@ const webSearchTool = tool(
     }
 )
 
+// const agent = createReactAgent({
+//     llm: geminiModel,
+//     tools: [webSearchTool],
+// });
+
 const agent = createReactAgent({
-    llm: geminiModel,
+    llm: mistralAnswerModel,
     tools: [webSearchTool],
 });
 
