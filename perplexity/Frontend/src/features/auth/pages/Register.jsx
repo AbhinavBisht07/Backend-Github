@@ -153,7 +153,7 @@ const Register = () => {
 
 
             {error && (
-              <p className='text-red-500 text-sm mt-2'>{error}</p>
+              <p className='text-red-500 text-sm mt-2 font-medium animate-pulse'>{error}</p>
             )}
 
 
