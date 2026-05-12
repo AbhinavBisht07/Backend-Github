@@ -11,52 +11,61 @@ import redis from "../config/cache.js";
  * @body { username, email, password }
  */
 export async function register(req, res) {
-    const { username, email, password } = req.body;
+    try {
+        const { username, email, password } = req.body;
 
-    const userAlreadyExists = await userModel.findOne({
-        $or: [{ username }, { email }]
-    })
-
-    if (userAlreadyExists) {
-        return res.status(400).json({
-            message: `User already exists with this ${userAlreadyExists.email === email ? "email." : "username."}`,
-            success: false,
-            err: "User already exists"
+        const userAlreadyExists = await userModel.findOne({
+            $or: [{ username }, { email }]
         })
-    }
+
+        if (userAlreadyExists) {
+            return res.status(400).json({
+                message: `User already exists with this ${userAlreadyExists.email === email ? "email." : "username."}`,
+                success: false,
+                err: "User already exists"
+            })
+        }
 
 
-    const user = await userModel.create({ username, email, password }); //password ko directly store karwa sakte kyuki user.model file mein dekhna ek midleware laga rakha humne ... jo user ka data database mein save hone se pehle chhalta hai .. and uss middleware mein password ko hash kar re hum ..
+        const user = await userModel.create({ username, email, password });
 
-    // filhaal email ke base pe create kar re token .. email bhi unique hota kyuki ..
-    const emailVerificationToken = jwt.sign(
-        { email: user.email },
-        process.env.JWT_SECRET,
-    )
+        const emailVerificationToken = jwt.sign(
+            { email: user.email },
+            process.env.JWT_SECRET,
+        )
 
-    await sendEmail({
-        to: email,
-        subject: "Welcome to Perplexity",
-        // text optional rehta hai ..agar html bhej re to text ki jarurat nahi rehti 
-        // text: `Hi ${username},\n\nThank you for registering at Perplexity. We're excited to have you on board!\n\nBest regards,\nThe Perplexity Team`,
-        html: `<p>Hi ${username},</p>
+        // fire and forget email sending to prevent timeout in production
+        sendEmail({
+            to: email,
+            subject: "Welcome to Perplexity",
+            html: `<p>Hi ${username},</p>
                <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
                <p>Please verify your email adress by clicking the link below:</p>
                <a href="https://perplexity-clone-9lkm.onrender.com/verify-email?token=${emailVerificationToken}">Verify Email</a>
                <p>If you did not create an account, please ignore this email.</p>
                <p>Best regards,<br>The Perplexity Team</p>`
-    })
+        }).catch(err => {
+            console.error("Delayed Email Sending Error:", err);
+        })
 
 
-    res.status(201).json({
-        message: "User registered successfully",
-        success: true,
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
-        }
-    })
+        res.status(201).json({
+            message: "User registered successfully",
+            success: true,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        })
+    } catch (err) {
+        console.error("REGISTRATION ERROR:", err);
+        res.status(500).json({
+            message: "Internal server error during registration",
+            success: false,
+            err: err.message
+        })
+    }
 }
 
 
@@ -219,13 +228,10 @@ export async function verifyEmail(req, res) {
         // save kar lenge :-
         await user.save();
 
-        // ab jab verify kar diya humne user ko to usko ek proper page dikhaenge hum ki bhaiya verification hogyi hai aapki .. ab aap dashboar ki taraf badh sakte ho .. etc..
-        const html =
-            `<h1>Email Verified Successfully!</h1>
-            <p>Your email has been verifiied. You can now log in to your account.</p>
-            <a href="https://perplexity-clone-9lkm.onrender.com/api/auth/login">Go to Login</a>`
-
-        return res.send(html)
+        return res.status(200).json({
+            message: "Email verified successfully",
+            success: true
+        })
     }
 
     catch (err) {
