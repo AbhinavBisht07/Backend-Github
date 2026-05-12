@@ -4,6 +4,7 @@ const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true, // Use SSL
+    family: 4,    // Force IPv4 to avoid ENETUNREACH errors with IPv6 on Render
     auth: {
         type: "OAuth2",
         user: process.env.GOOGLE_USER,
