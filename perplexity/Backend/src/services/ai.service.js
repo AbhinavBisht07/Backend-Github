@@ -94,15 +94,15 @@ export async function* generateResponse(messages) {
     )
 
     for await (const [chunk, metadata] of stream) {
+        // console.log("DEBUG CHUNK:", chunk);
+        // console.log("DEBUG METADATA:", metadata);
+
         // chunk is a BaseMessage - only stream AI text tokens (skip tool calls, tool results)
         if (
-            // chunk instanceof AIMessageChunk && // only streaming chunks, skip final AIMessage
             chunk.content &&    // has content
             typeof chunk.content === "string" && // is plain text(not array of parts)
-            metadata.langgraph_node === "agent" &&  // only from the agent node, not tools
-            !chunk.id?.startsWith("run-") //filters the run-level summary check
+            (metadata.langgraph_node === "agent" || metadata.langgraph_node === "Agent") // support both casing
         ) {
-            // console.log("YIELDING TOKEN:", chunk.content) // ← add this
             yield chunk.content; //yield each token as it arrives
         }
     }

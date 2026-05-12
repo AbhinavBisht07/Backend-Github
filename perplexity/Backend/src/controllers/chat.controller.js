@@ -54,14 +54,19 @@ export async function sendMessage(req,res){
         }
 
         // Store complete AI response in DB(only after streaming is done)
-        const aiMessage = await messageModel.create({
-            chat: chatId || chat._id,
-            content: fullResponse,
-            role: "ai"
-        })
+        let aiMessage = null;
+        if (fullResponse.trim()) {
+            aiMessage = await messageModel.create({
+                chat: chatId || chat._id,
+                content: fullResponse,
+                role: "ai"
+            })
+        } else {
+            console.warn("AI returned an empty response.");
+        }
 
-        // Send Final event sofrontend knows streaming is complete 
-        res.write(`event: done\ndata: ${JSON.stringify({ aiMessage })}\n\n`);
+        // Send Final event so frontend knows streaming is complete 
+        res.write(`event: done\ndata: ${JSON.stringify({ aiMessage: aiMessage || { content: "I'm sorry, I couldn't generate a response." } })}\n\n`);
         res.end();
     } catch (err) {
         console.error("BACKEND AI ERROR:", err);
