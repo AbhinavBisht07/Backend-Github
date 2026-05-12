@@ -42,7 +42,7 @@ export async function register(req, res) {
         html: `<p>Hi ${username},</p>
                <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
                <p>Please verify your email adress by clicking the link below:</p>
-               <a href="http://localhost:5173/verify-email?token=${emailVerificationToken}">Verify Email</a>
+               <a href="https://perplexity-clone-9lkm.onrender.com/verify-email?token=${emailVerificationToken}">Verify Email</a>
                <p>If you did not create an account, please ignore this email.</p>
                <p>Best regards,<br>The Perplexity Team</p>`
     })
