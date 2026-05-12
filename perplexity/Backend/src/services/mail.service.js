@@ -2,9 +2,10 @@ import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Use SSL
-    family: 4,    // Force IPv4 to avoid ENETUNREACH errors with IPv6 on Render
+    port: 587,
+    secure: false, // Use STARTTLS
+    requireTLS: true,
+    family: 4,    // Force IPv4
     auth: {
         type: "OAuth2",
         user: process.env.GOOGLE_USER,
@@ -13,9 +14,11 @@ const transporter = nodemailer.createTransport({
         clientId: process.env.GOOGLE_CLIENT_ID,
         redirectUri: "https://developers.google.com/oauthplayground"
     },
-    connectionTimeout: 10000, // 10 seconds
+    connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
+    logger: true, // Enable logging
+    debug: true,  // Enable debugging
 })
 
 // ab transporter kindof ready hai .. but ek baar humko verify karna padta hai ki connection bana bhi ki nahi bana
