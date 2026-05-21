@@ -1,0 +1,30 @@
+# Stage 1: Build the frontend (frontend_builder naam rakha iss stage ka humne)
+FROM node:20-alpine AS frontend_builder
+
+WORKDIR /app
+
+COPY ./Frontend/package*.json /app
+
+RUN npm install
+
+COPY ./Frontend /app
+
+RUN npm run build 
+
+
+
+# jahan pe bhi ek naya FROM keyword dikhaga mtlb wahan se nayi stage chaalu hogyi hai...
+# Stage 2: fullstack image
+FROM node:20-alpine
+ 
+WORKDIR /app
+
+COPY ./Backend/package*.json /app
+
+RUN npm install
+
+COPY ./Backend /app
+
+COPY --from=frontend_builder /app/dist /app/public
+
+CMD ["node", "server.js"]
