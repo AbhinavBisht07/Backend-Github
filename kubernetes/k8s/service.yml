@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name:  cohort-kubernetes-service
+spec:
+  selector:
+    app:  cohort-kubernetes # iss label ke basis pe ye service apne aap ko uss pod se connect kar lega jiska label iss selector label ke barabar hoga (i.e. app: cohort-kubernetes) ... to mtlb deployment file mein jo label diya hai wo yahan use hoga(ya keh sakte wahi label yahan bhi dena hoga) ... 
+    # to agar deployemnt file mein hum label kuch esa dete :- relation: chacha ... to yahan pe bhi selector mein wahi label dena padega, i.e., relation: chacha instead of app: cohort-kubernetes
+    # deployment file mein matchLabels and labels same hone chahiye ... similarly jo bhi matchLabels ya labels mein ho wo yahan selector mein dena padega
+  type:  ClusterIP
+  ports:
+  - name:  http
+    port:  80 # yahan pe genrally 80 hi hota hai to isko fix rakhenge change nahi karenge
+    targetPort:  3000 # jo deployment file mein containerPort diya gaya hai wo yahan targetPort hoga, i.e. 3000 in this case

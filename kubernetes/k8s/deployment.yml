@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cohort-kubernetes-deployment #
+spec:
+  replicas: 2 #
+  selector:
+    matchLabels:
+      app: cohort-kubernetes #
+  template:
+    metadata:
+      labels:
+        app: cohort-kubernetes #
+    spec:
+      containers:
+      - name: cohort-kubernetes-container # container ka naam dediya humne 
+        image: cohort_2_kubernetes:latest  # iss image ka container banana hai (pehle create kar li thi ye humne yaad karo)
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:  # ye limits bata rakhi hain ki maximum kitna resource use ho sakte hai(i.e. 128Mi memory aur 500m CPU , here Mi -> Mebibytes and m -> millicores/milliCPU)
+            memory: "128Mi"
+            cpu: "500m"
+          requests: # ye requests bata rakhi hain ki minimum kitna resource use ho sakte hai(i.e. 64Mi memory aur 250m CPU)
+            memory: "64Mi"
+            cpu: "250m"

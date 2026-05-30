@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cohort-kubernetes-ingress
+  labels:
+    app.kubernetes.io/name: cohort-kubernetes-ingress # yahan same name jaega ... jo ooper name diya hai humne uske jesa
+spec:
+  ingressClassName: nginx # ye classname khud likhna padea (boilerplate ke sath nahi aata ye)
+  # yahan pe nginx dena hai kyunki hum nginx ingress controller use kar rahe hain ... agar aap koi aur ingress controller use kar rahe hain to uska class name dena hoga yahan pe
+  rules:
+    # yahan se host hata diya .. abhi ke liye need nahi hai uski ... ab host hata diya to kuch errors aare the file mein ... host ke aage hyphen laga hua tha notice karna .. wo hyphen http ke aage laga diya ... fir bhi errors aare the .. to dhyan dena yml file mein indentation ki bohot dikkatein hoti hai wo errors indentation ki wajah se aare the ... proper spacing kardi http ke andar ki fields mein
+    - http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: cohort-kubernetes-service
+                port:
+                  number: 80
