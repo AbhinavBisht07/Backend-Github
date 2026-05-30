@@ -1,0 +1,29 @@
+apiVersion: apps/v1 #
+kind: Deployment
+metadata:
+  name: kubernetes2-deployment #deployment ka naam ye rahega
+spec:
+  replicas: 3 #3 pods run hone chahiye ek time pe(agar hum 4 likh dete to 4 pods run karta) 
+  selector: # Selector ye batata hai ki kaunse pods is deployment ka hissa hain .. ya konse pods ye deployment manage karega
+  # To jinn bhi pods ka matchLabels ya labels :- app: main-server hai unhe ye deployment manage karega
+    matchLabels: #
+      app: main-server #
+  template:
+    metadata:
+      labels:
+        app: main-server #
+    spec:
+      containers: #Ek pod multiple containers ko run kar sakta hai (an dye neeche pe -name mein ussi container ka naam de rakha hai humne... agar humko ek se jada container run karne hainn ek pod mein to neeche pe ek aur -name wali field add karni hogi and uski specifications bhi deni hogi) .. lekin generally ek hi container rakhte hain hum ek pod ke andar .. bas bata ra tha ki ek se jada bhi rakh sakte hain ..
+      - name: main-server #Container ka naam 
+        image: cohort_kubernetes2:latest #Image ka naam (jisse container banega)
+        imagePullPolicy: Always #
+        ports: # 
+        - containerPort: 3000 #Ye batata hai ki jo bhi container banega usme traffic kiss port pe aayega
+        resources: #
+          limits: # maximum itne use kar sakta hai :-
+            memory: "128Mi" #128 Mebibytes (1 megabyte = 0.95 Mebibytes)
+            cpu: "500m" # CPU 500 millicores(0.5 CPU cores)
+            # 1 core = 1000m(1000 millicores)
+          requests: # minimum itna use kar sakta hai(ideal/perfect conditions mein) :-
+            memory: "64Mi" #
+            cpu: "250m" #

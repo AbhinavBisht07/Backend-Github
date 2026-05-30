@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name:  main-server-service #
+spec:
+  selector:
+    app:  main-server #Agar service pe traffic aata hai to uss traffic ko kinn pods tak pahunchana hai ye selector batata hai
+  type:  ClusterIP #
+  ports:
+  - name:  name-of-the-port
+    port:  80
+    targetPort:  3000 #

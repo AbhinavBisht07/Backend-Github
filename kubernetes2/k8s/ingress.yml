@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubernetes2-ingress
+  labels:
+    app.kubernetes.io/name: kubernetes2-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+       paths:
+        - pathType: Prefix
+          path: "/"  # this means any request coming to localhost on "/"(i.e., root path) .. should go to main-server-service mentioned below
+          backend:
+            service:
+              name: main-server-service
+              port:
+                number: 80
+    - http:
+       paths:
+        - pathType: Prefix
+          path: "/api/product"
+          backend:
+            service:
+              name: product-service
+              port:
+                number: 80
