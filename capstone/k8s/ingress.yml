@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: codespaces-ingress
+  labels:
+    app.kubernetes.io/name: codespaces-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+        - pathType: Prefix
+          path: "/api/sandbox" # agar path /api/sandbox hua to usko sandbox-service par bhejna hai
+          backend:
+            service:
+              name: sandbox-service
+              port:
+                number: 80
