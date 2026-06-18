@@ -11,25 +11,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/api/sandbox/health", (req, res) => {
-  res.status(200).json({
-    message: "Sandbox API is healthy",
-    status: "OK"
-  });
+    res.status(200).json({
+        message: "Sandbox API is healthy and running!",
+        status: "ok"
+    });
 });
 
-app.post("/api/sandbox/start", async (req,res) => {
-  const sandboxId = uuid();
+app.post("/api/sandbox/start", async (req, res) => {
+    const sandboxId = uuid();
 
-  await Promise.all([
-    createPod(sandboxId),
-    createService(sandboxId)
-  ]);
+    await Promise.all([
+        createPod(sandboxId),
+        createService(sandboxId)
+    ]);
 
-  res.status(201).json({
-    message: "Sandbox environment created successfully",
-    sandboxId,
-    previewUrl: `http://${sandboxId}.preview.localhost`
-  });
-})
+    return res.status(200).json({
+        message: "Sandbox environment created successfully",
+        sandboxId,
+        previewUrl: `http://${sandboxId}.preview.localhost` 
+    });
+});
 
 export default app;
