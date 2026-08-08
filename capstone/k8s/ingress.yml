@@ -1,7 +1,18 @@
-apiVersion: networking.k8s.io/v1
+﻿apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: codespace-ingress
+  # ab kai baar AI jada time lera tha resond dene me (kyuki obviously usko bada app banana hai to time to lega hi) .. to wo jab jada time lera tha to humari request timeout ho jaa rahi thi ... to time ko badhane ke liye we use annotations
+  annotations:
+    # Time in seconds to wait for a response from the pod
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "6000"
+
+    # Time in seconds to wait for data to be sent to the pod
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "6000"
+
+    # Time in seconds to establish a connection to the pod
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "6000"
+  
   labels:
     app.kubernetes.io/name: codespace-ingress
 spec:
@@ -14,6 +25,16 @@ spec:
           backend:
             service:
               name: sandbox-service
+              port:
+                number: 80
+    
+    - http:
+        paths:
+        - pathType: Prefix
+          path: "/api/ai" 
+          backend:
+            service:
+              name: ai-service
               port:
                 number: 80
 

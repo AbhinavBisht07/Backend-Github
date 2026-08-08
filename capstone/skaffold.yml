@@ -1,0 +1,59 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+
+build:
+  tagPolicy:
+    sha256: {}
+      
+  artifacts:
+    - image: ai-orchestration
+      context: ai-orchestration # context bole to jiss folder ke andar humko iss image ki dockerfile mil jaegi uss foler ka naam(ya path bol sakte hain).
+      docker:
+        dockerfile: dockerfile
+      # hum sync bhi kar sakte hain skaffold mein ... yahan pe humne bol diya ki :- src folder ke andar jitni bhi cheezein hongi ya changes honge ("src/**")... wo jaengi humare container ke app folder ke andar src mein("app/src") 
+      sync: 
+        infer:
+          - "src/**"
+
+    - image: agent
+      context: sandbox/agent
+      docker:
+        dockerfile: dockerfile
+      sync: 
+        infer:
+          - "src/**"
+
+    - image: router
+      context: sandbox/router
+      docker:
+        dockerfile: dockerfile
+      sync: 
+        infer:
+          - "src/**"
+
+    - image: sandbox
+      context: sandbox/server
+      docker:
+        dockerfile: dockerfile
+      sync: 
+        infer:
+          - "src/**"
+
+    - image: template
+      context: sandbox/template
+      docker:
+        dockerfile: dockerfile
+  
+# Ab in images ko live karna hai humko ... to inko live karne ke liye we use manifest .... fir rawYaml mein jitni bhi k8s folder ke andar files hain .yml wali unko mention karte hain 
+manifests:
+  rawYaml:
+    - k8s/ai-deployment.yml
+    - k8s/ai-service.yml
+    - k8s/sandbox-deployment.yml
+    - k8s/sandbox-service.yml
+    - k8s/ingress.yml
+    - k8s/router-deployment.yml
+    - k8s/router-service.yml
+    - k8s/rbac.yml
+
+# To flow basically kuch esa jaega :- Pehle images banengi .. fir ye .yml files run hongi ..

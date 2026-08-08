@@ -8,5 +8,11 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     allowedHosts: true
+  },
+  // to stop the site from continuously reloading :-
+  watch: {
+    usePolling: true,
+    interval: 300,
+    ignored: [ 'node_modules' ]
   }
 })
