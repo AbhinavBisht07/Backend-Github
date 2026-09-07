@@ -1,9 +1,12 @@
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware"
 import morgan from "morgan";
+import http from "http";
 
 
 const app = express();
+const httpServer = http.createServer(app);
+
 app.use(morgan("combined"));
 
 
@@ -69,4 +72,34 @@ app.use((req, res, next) => {
 })
 
 
-export default app
+// WebSocket upgrade requests (e.g. socket.io) bypass Express's normal
+// middleware chain entirely — Node's http.Server emits a separate
+// 'upgrade' event for them, so we route them here using the same
+// subdomain logic as above.
+httpServer.on("upgrade", (req, socket, head) => {
+    console.log("========== UPGRADE ==========");
+    console.log("Host:", req.headers.host);
+    console.log("URL:", req.url);
+
+    const host = req.headers.host;
+    if (!host) {
+        socket.destroy();
+        return;
+    }
+
+    const sandboxId = host.split(".")[0];
+
+    if (host.split(".")[1] === "agent") {
+        console.log("Proxying to agent:", sandboxId);
+        getAgentProxy(sandboxId).upgrade(req, socket, head);
+    } else if (host.split(".")[1] === "preview") {
+        console.log("Proxying to preview:", sandboxId);
+        getProxy(sandboxId).upgrade(req, socket, head);
+    } else {
+        console.log("Unknown host");
+        socket.destroy();
+    }
+});
+
+
+export default httpServer

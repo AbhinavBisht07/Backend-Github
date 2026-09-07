@@ -1,4 +1,12 @@
-FROM node:20-alpine
+FROM node:20-bullseye
+
+# Install required system tools for building native modules like node-pty
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

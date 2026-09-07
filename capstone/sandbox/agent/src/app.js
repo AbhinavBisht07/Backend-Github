@@ -3,14 +3,30 @@ import morgan from "morgan";
 import fs from "fs";
 import path from "path";
 
+
+import {Server} from "socket.io";
+import http from "http";
+import pty from "node-pty"
+import os from "os";
+
+
 // workspace hi humari working directory rahegi .. kyuki workspace hi ek esa folder rahega jo humare VITE ke dev container and humare agent ke container, dono ke beech mein common hone waala hai ..
 const WORKING_DIR = '/workspace';
 
 
 const app = express();
+const httpServer = http.createServer(app);
 
 app.use(express.json());
 app.use(morgan('dev'));
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PATCH"],
+    }
+});
+
 
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -18,6 +34,42 @@ app.get('/', (req, res) => {
         status: "Success!"
     })
 });
+
+
+const shell = process.env.SHELL || 'bash';
+
+// Spawn the PTY process
+const ptyProcess = pty.spawn(shell, [], {
+    name: 'xterm-color',
+    cols: 80,
+    rows: 30,
+    cwd: "/workspace",
+    env: process.env
+})
+
+ptyProcess.onData((data) => {
+    io.emit('terminal-output', data);
+})
+
+ptyProcess.onExit(({ exitCode, signal }) => {
+    console.log(`PTY process exited with code: ${exitCode}, signal: ${signal}`);
+})
+
+io.on("connection", (socket) => {
+    console.log("Client connected: " + socket.id);
+
+
+    socket.on("terminal-input", (data) => {
+        ptyProcess.write(data);
+    })
+
+    socket.on("disconnect", () => {
+        console.log("Client disconnected: " + socket.id);
+    })
+})
+
+
+
 
 
 /**
@@ -106,7 +158,6 @@ app.get("/read-files", async (req, res) => {
     })
 })
 
-
 /**
  * @route PATCH /update-files
  * @description Update the contents of files specified in the request body. The request body should contain a property 'updates' with a JSON array of objects, where each object should have a 'file' property specifying the file path(relative to WORKING_DIR) and a 'content' property specifying the new content for that file.
@@ -170,7 +221,6 @@ app.patch("/update-files", async (req, res) => {
     })
 })
 
-
 /**
  * @route POST /create-files
  * @description Creates new files with the content specified in the request body. The request body should contain a property 'files' with a JSON Array of objects, each object should have a 'file' property specifiying the file path (relative to the working directory) and a 'content'  property specifying the content for the new file.
@@ -212,4 +262,5 @@ app.post("/create-files", async (req, res) => {
 })
 
 
-export default app;
+
+export default httpServer;

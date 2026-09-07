@@ -5,7 +5,7 @@ import { listFiles, readFiles, updateFiles } from "./tools.js";
 import { createAgent } from "langchain";
 
 const model = new ChatMistralAI({
-    model: "mistral-medium-latest",
+    model: "ministral-8b-2512",
     apiKey: process.env.MISTRAL_API_KEY,
     "temperature": 0,
     timeout: 60000, // 60s per attempt instead of whatever the hidden default is,
