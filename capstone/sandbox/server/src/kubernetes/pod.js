@@ -7,8 +7,9 @@ export async function createPod(sandboxId) {
         metadata: {
             name: `sandbox-pod-${sandboxId}`,
             labels: {
-                app: `sandbox`,
-                sandboxId: `${sandboxId}`
+                // app: `sandbox`,  // ye isliye hata diya kyuki humare sandbox server pe bhi tha ye label and agar humare iss pod mein bhi ye same label ajaega to sandbox service confuse ho jaegi ki traffic ko sandbox server me bhejna hai ya sandbox pod mein 
+                // sandboxId: `${sandboxId}`
+                sandboxId: sandboxId
             }
         },
         spec: {
@@ -75,4 +76,17 @@ export async function createPod(sandboxId) {
     });
 
     return response.body;
+}
+
+
+
+// Sandbox-pod ko delete karne wala function 
+export async function deletePod(sandboxId) {
+    const response = await k8sCoreV1Api.deleteNamespacedPod({
+        namespace: 'default',
+        name: `sandbox-pod-${sandboxId}`
+    }, {
+        gracePeriodSeconds: 0
+    })
+    return response
 }

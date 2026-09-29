@@ -15,6 +15,14 @@ build:
         infer:
           - "src/**"
 
+    - image: auth # newly added
+      context: auth
+      docker:
+        dockerfile: dockerfile
+      sync: 
+        infer:
+          - "src/**"
+
     - image: agent
       context: sandbox/agent
       docker:
@@ -49,11 +57,26 @@ manifests:
   rawYaml:
     - k8s/ai-deployment.yml
     - k8s/ai-service.yml
+    - k8s/auth-deployment.yml # newly added
+    - k8s/auth-service.yml # newly added
     - k8s/sandbox-deployment.yml
     - k8s/sandbox-service.yml
     - k8s/ingress.yml
     - k8s/router-deployment.yml
     - k8s/router-service.yml
     - k8s/rbac.yml
+    # - k8s/secrets.yml
+
+# i could have directly deployed secrets above with other files .. but for some reasons it was giving errors .. so by below deploy method i am using "kubectl apply -f k8s/secrets.yml" command to pre-deploy secrets and then deploy everything else afterwards using skaffold
+deploy:
+  kubectl:
+    hooks:
+      before:
+        - host:
+            command:
+              - kubectl
+              - apply
+              - -f
+              - k8s/secrets.yml
 
 # To flow basically kuch esa jaega :- Pehle images banengi .. fir ye .yml files run hongi ..

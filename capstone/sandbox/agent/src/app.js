@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
+import cors from "cors";
 
 
 import {Server} from "socket.io";
@@ -15,9 +16,14 @@ const WORKING_DIR = '/workspace';
 
 
 const app = express();
+app.use(cors({
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    origin: "*"
+}));
 const httpServer = http.createServer(app);
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 const io = new Server(httpServer, {

@@ -10,9 +10,12 @@ export default defineConfig({
     allowedHosts: true
   },
   // to stop the site from continuously reloading :-
-  watch: {
-    usePolling: true,
-    interval: 300,
-    ignored: [ 'node_modules' ]
+  server: {
+    hmr: { clientPort: 80, protocol: 'ws' }, // tell the browser to connnect hmr on port 80(ingress)
+    watch: {   // watch must be inside the server
+      usePolling: true,
+      interval: 300,
+      ignored: [ 'node_modules' ]
+    }
   }
 })

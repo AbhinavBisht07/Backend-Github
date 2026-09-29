@@ -2,6 +2,7 @@ import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware"
 import morgan from "morgan";
 import http from "http";
+import { refreshTTL } from "./config/redis.js";
 
 
 const app = express();
@@ -52,7 +53,7 @@ function getAgentProxy(sandboxId) {
 }
 
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     const host = req.headers.host;
     const sandboxId = host.split(".")[0]; // Extract the sandbox ID from the subdomain
 
@@ -61,6 +62,8 @@ app.use((req, res, next) => {
      * pod1.preview.localhost
      * pod1.agent.localhost
      */
+
+    await refreshTTL(sandboxId); // TTL refreshed for Sandbox Pod key
 
     if (host.split('.')[1] === 'agent') {
         return getAgentProxy(sandboxId)(req, res, next);
@@ -80,6 +83,7 @@ httpServer.on("upgrade", (req, socket, head) => {
     console.log("========== UPGRADE ==========");
     console.log("Host:", req.headers.host);
     console.log("URL:", req.url);
+    console.log("Headers:", req.headers);
 
     const host = req.headers.host;
     if (!host) {
