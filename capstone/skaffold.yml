@@ -22,6 +22,14 @@ build:
       sync: 
         infer:
           - "src/**"
+          
+    - image: notification # newly added
+      context: notification
+      docker:
+        dockerfile: dockerfile
+      sync: 
+        infer:
+          - "src/**"
 
     - image: agent
       context: sandbox/agent
@@ -65,6 +73,8 @@ manifests:
     - k8s/router-deployment.yml
     - k8s/router-service.yml
     - k8s/rbac.yml
+    - k8s/notification-deployment.yml
+    - k8s/notification-service.yml
     # - k8s/secrets.yml
 
 # i could have directly deployed secrets above with other files .. but for some reasons it was giving errors .. so by below deploy method i am using "kubectl apply -f k8s/secrets.yml" command to pre-deploy secrets and then deploy everything else afterwards using skaffold
