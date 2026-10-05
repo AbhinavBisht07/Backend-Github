@@ -10,7 +10,7 @@ export async function createSandboxKey(sandboxId) {
     // jab bhi redis mein koi key create karenge hum to uski value deni padti hai .... to abhi ke liye humne iski value mein staus: "active" de diya
     await redis.set(`sandbox:${sandboxId}`, JSON.stringify({
         status: 'active'
-    }), "EX", 120);
+    }), "EX", 60 * 20); //20 mins
     // abhi ke liye expiry 120 seconds ki dedi humne
 }
 // ye function bascally ye karega ki jab bhi ek sandbox create hora hoga uss time pe hum iss function ko call kar denge to ye function chal jaega and redis meinn jaake ek key create kar dega .. jo 120 seconds mein exire ho jaegi ..

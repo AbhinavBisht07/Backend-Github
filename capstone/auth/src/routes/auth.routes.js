@@ -41,8 +41,8 @@ router.get('/google/callback', passport.authenticate('google', {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
         // set token in cookie
-        res.cookie('token', token, { httpOnly: true });
-        res.redirect('/'); // Redirect to frontend after successful login
+        res.cookie('token', token);
+        res.redirect('http://localhost:5173'); // Redirect to frontend after successful login
     } catch (err) {
         console.error('Error during Google authentication:', err);
         res.redirect('/'); //Redirect to frontend on error
